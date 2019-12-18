@@ -2,22 +2,22 @@
 
 /**
  * demo.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -34,6 +34,5 @@ return [
     'transactions-index'     => 'Ces dépenses, dépôts et transferts ne sont pas particulièrement imaginatifs. Ils ont été générés automatiquement.',
     'piggy-banks-index'      => 'Comme vous pouvez le voir, il y a trois tirelires. Utilisez les boutons plus et moins pour influer sur le montant d’argent dans chaque tirelire. Cliquez sur le nom de la tirelire pour voir l’administration pour chaque tirelire.',
     'import-index'           => 'Tout fichier CSV peut être importé dans Firefly III. L\'importation de données depuis bunq et Spectre est également supportée. D\'autres banques et agrégateurs financiers seront mis en place dans le futur. En tant qu\'utilisateur du site de démonstration, vous ne pouvez voir que le «faux» service en action. Il va générer des transactions aléatoires pour vous montrer comment se déroule le processus.',
-    'recurring-index'        => 'Veuillez noter que cette fonctionnalité est en cours de développement et peut ne pas fonctionner comme prévu.',
-    'recurring-create'       => 'Veuillez noter que cette fonctionnalité est en cours de développement et peut ne pas fonctionner comme prévu.',
+    'profile-index'          => 'Garder à l’esprit que le site de démo se réinitialise toutes les quatre heures. Votre accès peut être révoqué à n\'importe quel moment. Ceci intervient automatiquement, ce n\'est pas un bug.',
 ];

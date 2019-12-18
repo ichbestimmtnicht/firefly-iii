@@ -2,29 +2,31 @@
 
 /**
  * validation.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
 
 return [
     'iban'                           => 'Это некорректный IBAN.',
-    'source_equals_destination'      => 'The source account equals the destination account.',
+    'zero_or_more'                   => 'Это значение не может быть отрицательным.',
+    'date_or_time'                   => 'Значение должно быть корректной датой или временем (ISO 8601).',
+    'source_equals_destination'      => 'Счёт источник и счёт назначения совпадают.',
     'unique_account_number_for_user' => 'Этот номер счёта уже используется.',
     'unique_iban_for_user'           => 'Этот IBAN уже используется.',
     'deleted_user'                   => 'По соображениям безопасности, вы не можете зарегистрироваться, используя этот адрес электронной почты.',
@@ -34,22 +36,27 @@ return [
     'file_attached'                  => 'Файл ":name". успешно загружен.',
     'must_exist'                     => 'ID в поле field :attribute не существует в базе данных.',
     'all_accounts_equal'             => 'Все счета в данном поле должны совпадать.',
-    'invalid_selection'              => 'Your selection is invalid.',
+    'group_title_mandatory'          => 'Название группы является обязательным, если транзакций несколько.',
+    'transaction_types_equal'        => 'Все части транзакции должны быть одного типа.',
+    'invalid_transaction_type'       => 'Недопустимый тип транзакции.',
+    'invalid_selection'              => 'Вы сделали неправильный выбор.',
     'belongs_user'                   => 'Данное значение недопустимо для этого поля.',
     'at_least_one_transaction'       => 'Необходима как минимум одна транзакция.',
     'at_least_one_repetition'        => 'Необходима как минимум одна транзакция.',
-    'require_repeat_until'           => 'Require either a number of repetitions, or an end date (repeat_until). Not both.',
+    'require_repeat_until'           => 'Требуется либо несколько повторений, либо конечная дата (repeat_until). Но не оба параметра разом.',
     'require_currency_info'          => 'Содержимое этого поля недействительно без информации о валюте.',
+    'not_transfer_account'           => 'Этот счёт нельзя использовать для перевода.',
+    'require_currency_amount'        => 'Содержимое этого поля недействительно без информации о валюте.',
     'equal_description'              => 'Описание транзакции не должно совпадать с глобальным описанием.',
     'file_invalid_mime'              => 'Файл ":name" имеет тип ":mime". Загрузка файлов такого типа невозможна.',
     'file_too_large'                 => 'Файл ":name" слишком большой.',
-    'belongs_to_user'                => 'The value of :attribute is unknown.',
+    'belongs_to_user'                => 'Значение :attribute неизвестно.',
     'accepted'                       => 'Необходимо принять :attribute.',
     'bic'                            => 'Это некорректный BIC.',
-    'at_least_one_trigger'           => 'Rule must have at least one trigger.',
-    'at_least_one_action'            => 'Rule must have at least one action.',
-    'base64'                         => 'This is not valid base64 encoded data.',
-    'model_id_invalid'               => 'The given ID seems invalid for this model.',
+    'at_least_one_trigger'           => 'Правило должно иметь хотя бы одно условие.',
+    'at_least_one_action'            => 'Правило должно иметь хотя бы одно действие.',
+    'base64'                         => 'Это некорректный формат для данных, зашифрованных с помощью base64.',
+    'model_id_invalid'               => 'Данный ID кажется недопустимым для этой модели.',
     'more'                           => ':attribute должен быть больше нуля.',
     'less'                           => ':attribute должен быть меньше 10,000,000',
     'active_url'                     => ':attribute не является допустимым URL-адресом.',
@@ -87,15 +94,15 @@ return [
     'max.array'                      => 'Значение :attribute не может содержать более :max элементов.',
     'mimes'                          => ':attribute должен быть файлом типа :values.',
     'min.numeric'                    => ':attribute должен быть минимум :min.',
-    'lte.numeric'                    => 'The :attribute must be less than or equal :value.',
+    'lte.numeric'                    => ':attribute должен быть меньше или равен :value.',
     'min.file'                       => ':attribute должен быть минимум :min килобайт.',
     'min.string'                     => 'Значение :attribute должно быть не меньше :min символов.',
     'min.array'                      => 'Значение :attribute должно содержать не меньше :min элементов.',
     'not_in'                         => 'Выбранный :attribute не верный.',
     'numeric'                        => ':attribute должен быть числом.',
-    'numeric_native'                 => 'The native amount must be a number.',
-    'numeric_destination'            => 'The destination amount must be a number.',
-    'numeric_source'                 => 'The source amount must be a number.',
+    'numeric_native'                 => 'Сумма должна быть числом.',
+    'numeric_destination'            => 'Сумма назначения должна быть числом.',
+    'numeric_source'                 => 'Исходная сумма должна быть числом.',
     'regex'                          => 'Формат :attribute некорректен.',
     'required'                       => 'Поле :attribute является обязательным.',
     'required_if'                    => 'Значение :attribute является обязательным, когда :other равное :value.',
@@ -114,18 +121,19 @@ return [
     'string'                         => 'Значение :attribute должно быть строкой.',
     'url'                            => 'Неверный формат ввода :attribute.',
     'timezone'                       => ':attribute должен быть в допустимом диапазоне.',
-    '2fa_code'                       => ':attribute введен неверно.',
-    'dimensions'                     => 'Недопустимые размеры изображения :attribute.',
-    'distinct'                       => 'Поле :attribute содержит повторяющееся значение.',
-    'file'                           => ':attribute должен быть файлом.',
-    'in_array'                       => 'Поле :attribute не существует в :other.',
-    'present'                        => 'Поле :attribute должно быть заполнено.',
-    'amount_zero'                    => 'Сумма не может быть равна нулю.',
-    'unique_piggy_bank_for_user'     => 'Название копилки должно быть уникальным.',
-    'secure_password'                => 'This is not a secure password. Please try again. For more information, visit http://bit.ly/FF3-password-security.',
-    'valid_recurrence_rep_type'      => 'Invalid repetition type for recurring transactions.',
-    'valid_recurrence_rep_moment'    => 'Invalid repetition moment for this type of repetition.',
-    'invalid_account_info'           => 'Invalid account information.',
+    '2fa_code'                    => ':attribute введен неверно.',
+    'dimensions'                  => 'Недопустимые размеры изображения :attribute.',
+    'distinct'                    => 'Поле :attribute содержит повторяющееся значение.',
+    'file'                        => ':attribute должен быть файлом.',
+    'in_array'                    => 'Поле :attribute не существует в :other.',
+    'present'                     => 'Поле :attribute должно быть заполнено.',
+    'amount_zero'                 => 'Сумма не может быть равна нулю.',
+    'current_target_amount'       => 'Текущая сумма должна быть меньше целевой суммы.',
+    'unique_piggy_bank_for_user'  => 'Название копилки должно быть уникальным.',
+    'secure_password'             => 'Это не безопасный пароль. Попробуйте еще раз. Подробнее можно узнать по ссылке https://bit.ly/FF3-password-security',
+    'valid_recurrence_rep_type'   => 'Недопустимый тип для повторяющихся транзакций.',
+    'valid_recurrence_rep_moment' => 'Неверный период повторения для данного типа повторений.',
+    'invalid_account_info'        => 'Неверные данные о счёте.',
     'attributes'                     => [
         'email'                   => '"Адрес электронной почты"',
         'description'             => '"Описание"',
@@ -133,8 +141,8 @@ return [
         'name'                    => '"Название"',
         'piggy_bank_id'           => 'ID копилки',
         'targetamount'            => '"Целевая сумма"',
-        'openingBalanceDate'      => '"Дата начального баланса"',
-        'openingBalance'          => '"Начальный баланс"',
+        'opening_balance_date'    => 'дата начального баланса',
+        'opening_balance'         => 'начальный баланс',
         'match'                   => '"Ключи для связи"',
         'amount_min'              => '"Минимальная сумма"',
         'amount_max'              => '"Максимальная сумма"',
@@ -162,4 +170,28 @@ return [
         'rule-trigger.4'          => '"Условие #4"',
         'rule-trigger.5'          => '"Условие #5"',
     ],
+
+    // validation of accounts:
+    'withdrawal_source_need_data'    => 'Для продолжения необходим действительный ID счёта-источника и/или действительное имя счёта.',
+    'withdrawal_source_bad_data'     => 'Не удалось найти корректный счёт-источник при поиске ID ":id" или имени ":name".',
+    'withdrawal_dest_need_data'      => 'Для продолжения необходим действительный ID счёта назначения и/или действительное имя счёта.',
+    'withdrawal_dest_bad_data'       => 'Не удалось найти действительный счёт назначения при поиске ID ":id" или имени ":name".',
+
+    'deposit_source_need_data' => 'Для продолжения необходим действительный ID счёта-источника и/или действительное имя счёта.',
+    'deposit_source_bad_data'  => 'Не удалось найти корректный счёт-источник при поиске ID ":id" или имени ":name".',
+    'deposit_dest_need_data'   => 'Для продолжения необходим действительный ID счёта назначения и/или действительное имя счёта.',
+    'deposit_dest_bad_data'    => 'Не удалось найти действительный счёт назначения при поиске ID ":id" или имени ":name".',
+
+    'transfer_source_need_data' => 'Для продолжения необходим действительный ID счёта-источника и/или действительное имя счёта.',
+    'transfer_source_bad_data'  => 'Не удалось найти корректный счёт-источник при поиске ID ":id" или имени ":name".',
+    'transfer_dest_need_data'   => 'Для продолжения необходим действительный ID счёта назначения и/или действительное имя счёта.',
+    'transfer_dest_bad_data'    => 'Не удалось найти действительный счёт назначения при поиске ID ":id" или имени ":name".',
+    'need_id_in_edit'           => 'Каждая разделённая транзакция должна иметь transaction_journal_id (либо действительный ID, либо 0).',
+
+    'ob_source_need_data' => 'Для продолжения необходим действительный ID счёта-источника и/или действительное имя счёта.',
+    'ob_dest_need_data'   => 'Для продолжения необходим действительный ID счёта назначения и/или действительное имя счёта.',
+    'ob_dest_bad_data'    => 'Не удалось найти действительный счёт назначения при поиске ID ":id" или имени ":name".',
+
+    'generic_invalid_source' => 'Вы не можете использовать этот счёт в качестве счёта-источника.',
+    'generic_invalid_destination' => 'Вы не можете использовать этот счёт в качестве счёта назначения.',
 ];

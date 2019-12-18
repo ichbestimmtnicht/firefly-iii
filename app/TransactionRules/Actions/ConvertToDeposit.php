@@ -1,22 +1,22 @@
 <?php
 /**
  * ConvertToDeposit.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace FireflyIII\TransactionRules\Actions;
 
 
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Factory\AccountFactory;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountType;
@@ -57,7 +58,7 @@ class ConvertToDeposit implements ActionInterface
      * @param TransactionJournal $journal
      *
      * @return bool
-     * @throws \FireflyIII\Exceptions\FireflyException
+     * @throws FireflyException
      */
     public function act(TransactionJournal $journal): bool
     {
@@ -102,10 +103,12 @@ class ConvertToDeposit implements ActionInterface
 
         if (TransactionType::WITHDRAWAL === $type) {
             Log::debug('Going to transform a withdrawal to a deposit.');
+
             return $this->convertWithdrawal($journal);
         }
         if (TransactionType::TRANSFER === $type) {
             Log::debug('Going to transform a transfer to a deposit.');
+
             return $this->convertTransfer($journal);
         }
 
@@ -119,7 +122,7 @@ class ConvertToDeposit implements ActionInterface
      * @param TransactionJournal $journal
      *
      * @return bool
-     * @throws \FireflyIII\Exceptions\FireflyException
+     * @throws FireflyException
      */
     private function convertTransfer(TransactionJournal $journal): bool
     {
@@ -133,7 +136,7 @@ class ConvertToDeposit implements ActionInterface
         // get the action value, or use the original source name in case the action value is empty:
         // this becomes a new or existing revenue account.
         /** @var Account $source */
-        $source = $sourceTransactions->first()->account;
+        $source      = $sourceTransactions->first()->account;
         $revenueName = '' === $this->action->action_value ? $source->name : $this->action->action_value;
         $revenue     = $factory->findOrCreate($revenueName, AccountType::REVENUE);
 
@@ -161,7 +164,7 @@ class ConvertToDeposit implements ActionInterface
      * @param TransactionJournal $journal
      *
      * @return bool
-     * @throws \FireflyIII\Exceptions\FireflyException
+     * @throws FireflyException
      */
     private function convertWithdrawal(TransactionJournal $journal): bool
     {

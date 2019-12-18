@@ -1,22 +1,22 @@
 <?php
 /**
  * BunqRoutine.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -50,9 +50,9 @@ class BunqRoutine implements RoutineInterface
      */
     public function run(): void
     {
-        Log::debug(sprintf('Now in BunqRoutine::run() with status "%s" and stage "%s".', $this->importJob->status, $this->importJob->stage));
+        Log::info(sprintf('Now in BunqRoutine::run() with status "%s" and stage "%s".', $this->importJob->status, $this->importJob->stage));
         $valid = ['ready_to_run']; // should be only ready_to_run
-        if (\in_array($this->importJob->status, $valid, true)) {
+        if (in_array($this->importJob->status, $valid, true)) {
             switch ($this->importJob->stage) {
                 default:
                     throw new FireflyException(sprintf('BunqRoutine cannot handle stage "%s".', $this->importJob->stage)); // @codeCoverageIgnore
@@ -78,13 +78,13 @@ class BunqRoutine implements RoutineInterface
                     $handler->run();
                     $transactions = $handler->getTransactions();
                     // could be that more transactions will arrive in a second run.
-                    if (true === $handler->stillRunning) {
+                    if (true === $handler->isStillRunning()) {
                         Log::debug('Handler indicates that it is still working.');
                         $this->repository->setStatus($this->importJob, 'ready_to_run');
                         $this->repository->setStage($this->importJob, 'go-for-import');
                     }
                     $this->repository->appendTransactions($this->importJob, $transactions);
-                    if (false === $handler->stillRunning) {
+                    if (false === $handler->isStillRunning()) {
                         Log::info('Handler indicates that its done!');
                         $this->repository->setStatus($this->importJob, 'provider_finished');
                         $this->repository->setStage($this->importJob, 'final');

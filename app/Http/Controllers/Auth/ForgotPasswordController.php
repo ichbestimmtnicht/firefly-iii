@@ -1,38 +1,39 @@
 <?php
 /**
  * ForgotPasswordController.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /** @noinspection PhpDynamicAsStaticMethodCallInspection */
 declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers\Auth;
 
-use FireflyConfig;
 use FireflyIII\Http\Controllers\Controller;
 use FireflyIII\Repositories\User\UserRepositoryInterface;
 use FireflyIII\User;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Log;
 
 /**
  * Class ForgotPasswordController
+ * @codeCoverageIgnore
  */
 class ForgotPasswordController extends Controller
 {
@@ -58,9 +59,21 @@ class ForgotPasswordController extends Controller
      */
     public function sendResetLinkEmail(Request $request, UserRepositoryInterface $repository)
     {
+        Log::info('Start of sendResetLinkEmail()');
+        $loginProvider = config('firefly.login_provider');
+        // @codeCoverageIgnoreStart
+        if ('eloquent' !== $loginProvider) {
+            $message = sprintf('Cannot reset password when authenticating over "%s".', $loginProvider);
+            Log::error($message);
+
+            return view('error', compact('message'));
+        }
+        // @codeCoverageIgnoreEnd
+
         $this->validateEmail($request);
 
         // verify if the user is not a demo user. If so, we give him back an error.
+        /** @var User $user */
         $user = User::where('email', $request->get('email'))->first();
 
         if (null !== $user && $repository->hasRole($user, 'demo')) {
@@ -90,14 +103,22 @@ class ForgotPasswordController extends Controller
      */
     public function showLinkRequestForm()
     {
+        $loginProvider = config('firefly.login_provider');
+        if ('eloquent' !== $loginProvider) {
+            $message = sprintf('Cannot reset password when authenticating over "%s".', $loginProvider);
+
+            return view('error', compact('message'));
+        }
+
         // is allowed to?
-        $singleUserMode    = FireflyConfig::get('single_user_mode', config('firefly.configuration.single_user_mode'))->data;
+        $singleUserMode    = app('fireflyconfig')->get('single_user_mode', config('firefly.configuration.single_user_mode'))->data;
         $userCount         = User::count();
         $allowRegistration = true;
+        $pageTitle         = (string)trans('firefly.forgot_pw_page_title');
         if (true === $singleUserMode && $userCount > 0) {
             $allowRegistration = false;
         }
 
-        return view('auth.passwords.email')->with(compact('allowRegistration'));
+        return view('auth.passwords.email')->with(compact('allowRegistration', 'pageTitle'));
     }
 }

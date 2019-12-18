@@ -1,22 +1,22 @@
 <?php
 /**
  * DebugController.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -39,14 +39,14 @@ use Route as RouteFacade;
 /**
  * Class DebugController
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class DebugController extends Controller
 {
     use GetConfigurationData;
 
     /**
-     * HomeController constructor.
+     * DebugController constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -112,8 +112,6 @@ class DebugController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function index(Request $request)
     {
@@ -128,18 +126,18 @@ class DebugController extends Controller
         $drivers        = implode(', ', DB::availableDrivers());
         $currentDriver  = DB::getDriverName();
         $userAgent      = $request->header('user-agent');
-        $isSandstorm    = var_export(env('IS_SANDSTORM', 'unknown'), true);
-        $isDocker       = var_export(env('IS_DOCKER', 'unknown'), true);
-        $toSandbox      = var_export(env('BUNQ_USE_SANDBOX', 'unknown'), true);
-        $trustedProxies = env('TRUSTED_PROXIES', '(none)');
+        $isSandstorm    = var_export(config('firefly.is_sandstorm'), true);
+        $toSandbox      = var_export(config('firefly.bunq_use_sandbox'), true);
+        $trustedProxies = config('firefly.trusted_proxies');
         $displayErrors  = ini_get('display_errors');
+        $storageDisks   = implode(', ', config('filesystems.disks.upload.disks'));
         $errorReporting = $this->errorReporting((int)ini_get('error_reporting'));
-        $appEnv         = env('APP_ENV', '');
-        $appDebug       = var_export(env('APP_DEBUG', false), true);
-        $logChannel     = env('LOG_CHANNEL', '');
-        $appLogLevel    = env('APP_LOG_LEVEL', 'info');
-        $packages       = $this->collectPackages();
-        $cacheDriver    = env('CACHE_DRIVER', 'unknown');
+        $appEnv         = config('app.env');
+        $appDebug       = var_export(config('app.debug'), true);
+        $logChannel     = config('logging.default');
+        $appLogLevel    = config('logging.level');
+        $cacheDriver    = config('cache.default');
+        $loginProvider  = config('auth.driver');
 
         // set languages, see what happens:
         $original       = setlocale(LC_ALL, 0);
@@ -170,14 +168,16 @@ class DebugController extends Controller
                 }
             }
         }
-        // last few lines
-        $logContent = 'Truncated from this point <----|' . substr($logContent, -8192);
+        if ('' !== $logContent) {
+            // last few lines
+            $logContent = 'Truncated from this point <----|' . substr($logContent, -8192);
+        }
 
         return view(
             'debug', compact(
-                       'phpVersion', 'extensions', 'localeAttempts', 'appEnv', 'appDebug', 'logChannel', 'appLogLevel', 'now', 'packages', 'drivers',
-                       'currentDriver',
-                       'userAgent', 'displayErrors', 'errorReporting', 'phpOs', 'interface', 'logContent', 'cacheDriver', 'isDocker', 'isSandstorm',
+                       'phpVersion', 'extensions', 'localeAttempts', 'appEnv', 'appDebug', 'logChannel', 'appLogLevel', 'now', 'drivers',
+                       'currentDriver', 'loginProvider', 'storageDisks',
+                       'userAgent', 'displayErrors', 'errorReporting', 'phpOs', 'interface', 'logContent', 'cacheDriver', 'isSandstorm',
                        'trustedProxies',
                        'toSandbox'
                    )
@@ -188,8 +188,6 @@ class DebugController extends Controller
      * Return all possible routes.
      *
      * @return string
-     *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function routes(): string
     {
@@ -201,7 +199,7 @@ class DebugController extends Controller
                    'rules.select', 'search.search', 'test-flash', 'transactions.link.delete', 'transactions.link.switch',
                    'two-factor.lost', 'reports.options', 'debug', 'import.create-job', 'import.download', 'import.start', 'import.status.json',
                    'preferences.delete-code', 'rules.test-triggers', 'piggy-banks.remove-money', 'piggy-banks.add-money',
-                   'accounts.reconcile.transactions', 'accounts.reconcile.overview', 'export.download',
+                   'accounts.reconcile.transactions', 'accounts.reconcile.overview',
                    'transactions.clone', 'two-factor.index', 'api.v1', 'installer.', 'attachments.view', 'import.create',
                    'import.job.download', 'import.job.start', 'import.job.status.json', 'import.job.store', 'recurring.events',
                    'recurring.suggest',
@@ -210,7 +208,7 @@ class DebugController extends Controller
         /** @var Route $route */
         foreach ($set as $route) {
             $name = (string)$route->getName();
-            if (\in_array('GET', $route->methods(), true)) {
+            if (in_array('GET', $route->methods(), true)) {
                 $found = false;
                 foreach ($ignore as $string) {
                     if (!(false === stripos($name, $string))) {

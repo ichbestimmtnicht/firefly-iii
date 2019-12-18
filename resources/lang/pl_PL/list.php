@@ -2,22 +2,22 @@
 
 /**
  * list.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -36,9 +36,13 @@ return [
     'currentBalance'          => 'Bieżące saldo',
     'linked_to_rules'         => 'Powiązane reguły',
     'active'                  => 'Jest aktywny?',
+    'percentage'              => '%',
+    'next_due'                => 'Następny termin',
+    'transaction_type'        => 'Typ',
     'lastActivity'            => 'Ostatnia aktywność',
     'balanceDiff'             => 'Różnica sald',
     'matchesOn'               => 'Dopasowanie',
+    'other_meta_data'         => 'Inne dane meta',
     'account_type'            => 'Typ konta',
     'created_at'              => 'Utworzono',
     'account'                 => 'Konto',
@@ -87,7 +91,6 @@ return [
     'attachments_count'       => 'Liczba załączników',
     'bills_count'             => 'Liczba rachunków',
     'categories_count'        => 'Liczba kategorii',
-    'export_jobs_count'       => 'Liczba zadań eksportu',
     'import_jobs_count'       => 'Liczba zadań importu',
     'budget_count'            => 'Liczba budżetów',
     'rule_and_groups_count'   => 'Liczba reguł i grup reguł',
@@ -104,17 +107,17 @@ return [
     'sum_transfers'           => 'Suma transferów',
     'reconcile'               => 'Uzgodnij',
     'account_on_spectre'      => 'Konto (Spectre)',
-    'account_on_ynab'         => 'Account (YNAB)',
+    'account_on_ynab'         => 'Konto (YNAB)',
     'do_import'               => 'Importuj z tego konta',
-    'sepa-ct-id'              => 'SEPA End to End Identifier',
-    'sepa-ct-op'              => 'SEPA Opposing Account Identifier',
-    'sepa-db'                 => 'SEPA Mandate Identifier',
-    'sepa-country'            => 'SEPA Country',
-    'sepa-cc'                 => 'SEPA Clearing Code',
-    'sepa-ep'                 => 'SEPA External Purpose',
-    'sepa-ci'                 => 'SEPA Creditor Identifier',
-    'sepa-batch-id'           => 'SEPA Batch ID',
-    'external_id'             => 'External ID',
+    'sepa_ct_id'              => 'Identyfikator end-to-end SEPA',
+    'sepa_ct_op'              => 'Identyfikator przeciwnego konta SEPA',
+    'sepa_db'                 => 'Identyfikator mandatu SEPA',
+    'sepa_country'            => 'Kraj SEPA',
+    'sepa_cc'                 => 'Kod rozliczeniowy SEPA',
+    'sepa_ep'                 => 'SEPA External Purpose',
+    'sepa_ci'                 => 'SEPA Creditor Identifier',
+    'sepa_batch_id'           => 'ID paczki SEPA',
+    'external_id'             => 'Zewnętrzne ID',
     'account_at_bunq'         => 'Konto bunq',
     'file_name'               => 'Nazwa pliku',
     'file_size'               => 'Rozmiar pliku',
@@ -122,15 +125,15 @@ return [
     'attached_to'             => 'Dołączony do',
     'file_exists'             => 'Plik istnieje',
     'spectre_bank'            => 'Bank',
-    'spectre_last_use'        => 'Last login',
+    'spectre_last_use'        => 'Ostatnie logowanie',
     'spectre_status'          => 'Status',
-    'bunq_payment_id'         => 'bunq payment ID',
-    'repetitions'             => 'Repetitions',
-    'title'                   => 'Title',
+    'bunq_payment_id'         => 'ID płatności bunq',
+    'repetitions'             => 'Powtarzanie',
+    'title'                   => 'Tytuł',
     'transaction_s'           => 'Transakcja(e)',
     'field'                   => 'Pole',
     'value'                   => 'Wartość',
-    'interest'                => 'Interest',
-    'interest_period'         => 'interest period',
-    'liability_type'          => 'Type of liability',
+    'interest'                => 'Odsetki',
+    'interest_period'         => 'okres odsetkowy',
+    'liability_type'          => 'Rodzaj zobowiązania',
 ];

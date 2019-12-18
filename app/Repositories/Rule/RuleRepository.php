@@ -1,22 +1,22 @@
 <?php
 /**
  * RuleRepository.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -34,7 +34,6 @@ use Log;
 /**
  * Class RuleRepository.
  *
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class RuleRepository implements RuleRepositoryInterface
 {
@@ -46,8 +45,8 @@ class RuleRepository implements RuleRepositoryInterface
      */
     public function __construct()
     {
-        if ('testing' === env('APP_ENV')) {
-            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', \get_class($this)));
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
         }
     }
 
@@ -163,6 +162,26 @@ class RuleRepository implements RuleRepositoryInterface
     /**
      * @param Rule $rule
      *
+     * @return Collection
+     */
+    public function getRuleActions(Rule $rule): Collection
+    {
+        return $rule->ruleActions()->orderBy('order', 'ASC')->get();
+    }
+
+    /**
+     * @param Rule $rule
+     *
+     * @return Collection
+     */
+    public function getRuleTriggers(Rule $rule): Collection
+    {
+        return $rule->ruleTriggers()->orderBy('order', 'ASC')->get();
+    }
+
+    /**
+     * @param Rule $rule
+     *
      * @return bool
      */
     public function moveDown(Rule $rule): bool
@@ -257,7 +276,7 @@ class RuleRepository implements RuleRepositoryInterface
      */
     public function resetRulesInGroupOrder(RuleGroup $ruleGroup): bool
     {
-        $ruleGroup->rules()->whereNotNull('deleted_at')->update(['order' => 0]);
+        $ruleGroup->rules()->withTrashed()->whereNotNull('deleted_at')->update(['order' => 0]);
 
         $set   = $ruleGroup->rules()
                            ->orderBy('order', 'ASC')
@@ -301,11 +320,11 @@ class RuleRepository implements RuleRepositoryInterface
 
         $rule->rule_group_id   = $data['rule_group_id'];
         $rule->order           = ($order + 1);
-        $rule->active          = true;
-        $rule->strict          = $data['strict'] ?? false;
-        $rule->stop_processing = 1 === (int)$data['stop_processing'];
+        $rule->active          = $data['active'];
+        $rule->strict          = $data['strict'];
+        $rule->stop_processing = $data['stop_processing'];
         $rule->title           = $data['title'];
-        $rule->description     = \strlen($data['description']) > 0 ? $data['description'] : null;
+        $rule->description     = strlen($data['description']) > 0 ? $data['description'] : null;
 
         $rule->save();
 
@@ -367,25 +386,29 @@ class RuleRepository implements RuleRepositoryInterface
     public function update(Rule $rule, array $data): Rule
     {
         // update rule:
-        $rule->rule_group_id   = $data['rule_group_id'];
-        $rule->active          = $data['active'];
-        $rule->stop_processing = $data['stop_processing'];
-        $rule->title           = $data['title'];
-        $rule->strict          = $data['strict'] ?? false;
-        $rule->description     = $data['description'];
+
+        $rule->rule_group_id   = $data['rule_group_id'] ?? $rule->rule_group_id;
+        $rule->active          = $data['active'] ?? $rule->active;
+        $rule->stop_processing = $data['stop_processing'] ?? $rule->stop_processing;
+        $rule->title           = $data['title'] ?? $rule->title;
+        $rule->strict          = $data['strict'] ?? $rule->strict;
+        $rule->description     = $data['description'] ?? $rule->description;
         $rule->save();
 
-        // delete triggers:
-        $rule->ruleTriggers()->delete();
+        if (null !== $data['triggers']) {
+            // delete triggers:
+            $rule->ruleTriggers()->delete();
 
-        // delete actions:
-        $rule->ruleActions()->delete();
+            // recreate triggers:
+            $this->storeTriggers($rule, $data);
+        }
+        if (null !== $data['actions']) {
+            // delete actions:
+            $rule->ruleActions()->delete();
 
-        // recreate triggers:
-        $this->storeTriggers($rule, $data);
-
-        // recreate actions:
-        $this->storeActions($rule, $data);
+            // recreate actions:
+            $this->storeActions($rule, $data);
+        }
 
         return $rule;
     }
@@ -399,12 +422,12 @@ class RuleRepository implements RuleRepositoryInterface
     private function storeActions(Rule $rule, array $data): bool
     {
         $order = 1;
-        foreach ($data['rule_actions'] as $action) {
+        foreach ($data['actions'] as $action) {
             $value          = $action['value'] ?? '';
             $stopProcessing = $action['stop_processing'] ?? false;
 
             $actionValues = [
-                'action'          => $action['name'],
+                'action'          => $action['type'],
                 'value'           => $value,
                 'stop_processing' => $stopProcessing,
                 'order'           => $order,
@@ -435,12 +458,12 @@ class RuleRepository implements RuleRepositoryInterface
         ];
 
         $this->storeTrigger($rule, $triggerValues);
-        foreach ($data['rule_triggers'] as $trigger) {
+        foreach ($data['triggers'] as $trigger) {
             $value          = $trigger['value'] ?? '';
             $stopProcessing = $trigger['stop_processing'] ?? false;
 
             $triggerValues = [
-                'action'          => $trigger['name'],
+                'action'          => $trigger['type'],
                 'value'           => $value,
                 'stop_processing' => $stopProcessing,
                 'order'           => $order,

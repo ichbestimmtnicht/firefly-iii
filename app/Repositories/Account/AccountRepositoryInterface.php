@@ -1,22 +1,22 @@
 <?php
 /**
  * AccountRepositoryInterface.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -25,6 +25,8 @@ namespace FireflyIII\Repositories\Account;
 use Carbon\Carbon;
 use FireflyIII\Models\Account;
 use FireflyIII\Models\AccountType;
+use FireflyIII\Models\TransactionCurrency;
+use FireflyIII\Models\TransactionGroup;
 use FireflyIII\Models\TransactionJournal;
 use FireflyIII\User;
 use Illuminate\Support\Collection;
@@ -35,7 +37,6 @@ use Illuminate\Support\Collection;
  */
 interface AccountRepositoryInterface
 {
-
     /**
      * Moved here from account CRUD.
      *
@@ -54,6 +55,15 @@ interface AccountRepositoryInterface
      * @return bool
      */
     public function destroy(Account $account, ?Account $moveTo): bool;
+
+    /**
+     * Find account with same name OR same IBAN or both, but not the same type or ID.
+     *
+     * @param Collection $accounts
+     *
+     * @return Collection
+     */
+    public function expandWithDoubles(Collection $accounts): Collection;
 
     /**
      * Find by account number. Is used.
@@ -89,6 +99,20 @@ interface AccountRepositoryInterface
     public function findNull(int $accountId): ?Account;
 
     /**
+     * @param Account $account
+     *
+     * @return TransactionCurrency|null
+     */
+    public function getAccountCurrency(Account $account): ?TransactionCurrency;
+
+    /**
+     * @param Account $account
+     *
+     * @return string
+     */
+    public function getAccountType(Account $account): string;
+
+    /**
      * Return account type or null if not found.
      *
      * @param string $type
@@ -119,16 +143,16 @@ interface AccountRepositoryInterface
     public function getActiveAccountsByType(array $types): Collection;
 
     /**
+     * @param array $types
+     *
+     * @return Collection
+     */
+    public function getInactiveAccountsByType(array $types): Collection;
+
+    /**
      * @return Account
      */
     public function getCashAccount(): Account;
-
-    /**
-     * @param $account
-     *
-     * @return string
-     */
-    public function getInterestPerDay(Account $account): string;
 
     /**
      * Return meta value for account. Null if not found.
@@ -150,6 +174,14 @@ interface AccountRepositoryInterface
     public function getNoteText(Account $account): ?string;
 
     /**
+     * @param Account $account
+     *
+     * @return TransactionJournal|null
+     *
+     */
+    public function getOpeningBalance(Account $account): ?TransactionJournal;
+
+    /**
      * Returns the amount of the opening balance for this account.
      *
      * @param Account $account
@@ -168,6 +200,20 @@ interface AccountRepositoryInterface
     public function getOpeningBalanceDate(Account $account): ?string;
 
     /**
+     * @param Account $account
+     *
+     * @return TransactionGroup|null
+     */
+    public function getOpeningBalanceGroup(Account $account): ?TransactionGroup;
+
+    /**
+     * @param Account $account
+     *
+     * @return Collection
+     */
+    public function getPiggyBanks(Account $account): Collection;
+
+    /**
      * Find or create the opposing reconciliation account.
      *
      * @param Account $account
@@ -176,6 +222,7 @@ interface AccountRepositoryInterface
      */
     public function getReconciliation(Account $account): ?Account;
 
+
     /**
      * @param Account $account
      *
@@ -183,23 +230,6 @@ interface AccountRepositoryInterface
      */
     public function isLiability(Account $account): bool;
 
-    /**
-     * Returns the date of the very first transaction in this account.
-     *
-     * @param Account $account
-     *
-     * @return TransactionJournal|null
-     */
-    public function latestJournal(Account $account): ?TransactionJournal;
-
-    /**
-     * Returns the date of the very last transaction in this account.
-     *
-     * @param Account $account
-     *
-     * @return Carbon|null
-     */
-    public function latestJournalDate(Account $account): ?Carbon;
 
     /**
      * Returns the date of the very first transaction in this account.
@@ -218,6 +248,14 @@ interface AccountRepositoryInterface
      * @return Carbon|null
      */
     public function oldestJournalDate(Account $account): ?Carbon;
+
+    /**
+     * @param string $query
+     * @param array  $types
+     *
+     * @return Collection
+     */
+    public function searchAccount(string $query, array $types): Collection;
 
     /**
      * @param User $user

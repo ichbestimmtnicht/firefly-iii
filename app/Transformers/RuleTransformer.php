@@ -1,22 +1,22 @@
 <?php
 /**
  * RuleTransformer.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -24,89 +24,32 @@ declare(strict_types=1);
 namespace FireflyIII\Transformers;
 
 
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Rule;
-use League\Fractal\Resource\Collection as FractalCollection;
-use League\Fractal\Resource\Item;
-use League\Fractal\TransformerAbstract;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use FireflyIII\Models\RuleAction;
+use FireflyIII\Models\RuleTrigger;
+use FireflyIII\Repositories\Rule\RuleRepositoryInterface;
+use Log;
 
 /**
  * Class RuleTransformer
  */
-class RuleTransformer extends TransformerAbstract
+class RuleTransformer extends AbstractTransformer
 {
-    /**
-     * List of resources possible to include
-     *
-     * @var array
-     */
-    protected $availableIncludes = ['rule_group', 'rule_triggers', 'rule_actions', 'user'];
-    /**
-     * List of resources to automatically include
-     *
-     * @var array
-     */
-    protected $defaultIncludes = ['rule_group', 'rule_triggers', 'rule_actions'];
-
-    /** @var ParameterBag */
-    protected $parameters;
+    /** @var RuleRepositoryInterface */
+    private $ruleRepository;
 
     /**
      * CurrencyTransformer constructor.
      *
      * @codeCoverageIgnore
-     *
-     * @param ParameterBag $parameters
      */
-    public function __construct(ParameterBag $parameters)
+    public function __construct()
     {
-        $this->parameters = $parameters;
-    }
-
-    /**
-     * @param Rule $rule
-     *
-     * @return FractalCollection
-     */
-    public function includeRuleActions(Rule $rule): FractalCollection
-    {
-        return $this->collection($rule->ruleActions, new RuleActionTransformer($this->parameters), 'rule_actions');
-    }
-
-    /**
-     * Include the rule group.
-     *
-     * @param Rule $rule
-     *
-     * @codeCoverageIgnore
-     * @return Item
-     */
-    public function includeRuleGroup(Rule $rule): Item
-    {
-        return $this->item($rule->ruleGroup, new RuleGroupTransformer($this->parameters), 'rule_groups');
-    }
-
-    /**
-     * @param Rule $rule
-     *
-     * @return FractalCollection
-     */
-    public function includeRuleTriggers(Rule $rule): FractalCollection
-    {
-        return $this->collection($rule->ruleTriggers, new RuleTriggerTransformer($this->parameters), 'rule_triggers');
-    }
-
-    /**
-     * Include the user.
-     *
-     * @param Rule $rule
-     *
-     * @codeCoverageIgnore
-     * @return Item
-     */
-    public function includeUser(Rule $rule): Item
-    {
-        return $this->item($rule->user, new UserTransformer($this->parameters), 'users');
+        $this->ruleRepository = app(RuleRepositoryInterface::class);
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
+        }
     }
 
     /**
@@ -115,19 +58,26 @@ class RuleTransformer extends TransformerAbstract
      * @param Rule $rule
      *
      * @return array
+     * @throws FireflyException
      */
     public function transform(Rule $rule): array
     {
+        $this->ruleRepository->setUser($rule->user);
+
         $data = [
             'id'              => (int)$rule->id,
-            'updated_at'      => $rule->updated_at->toAtomString(),
             'created_at'      => $rule->created_at->toAtomString(),
+            'updated_at'      => $rule->updated_at->toAtomString(),
+            'rule_group_id'   => (int)$rule->rule_group_id,
             'title'           => $rule->title,
-            'text'            => $rule->text,
+            'description'     => $rule->description,
             'order'           => (int)$rule->order,
             'active'          => $rule->active,
-            'stop_processing' => $rule->stop_processing,
             'strict'          => $rule->strict,
+            'stop_processing' => $rule->stop_processing,
+            'trigger'         => $this->getRuleTrigger($rule),
+            'triggers'        => $this->triggers($rule),
+            'actions'         => $this->actions($rule),
             'links'           => [
                 [
                     'rel' => 'self',
@@ -137,5 +87,83 @@ class RuleTransformer extends TransformerAbstract
         ];
 
         return $data;
+    }
+
+    /**
+     * @param Rule $rule
+     *
+     * @return array
+     */
+    private function actions(Rule $rule): array
+    {
+        $result  = [];
+        $actions = $this->ruleRepository->getRuleActions($rule);
+        /** @var RuleAction $ruleAction */
+        foreach ($actions as $ruleAction) {
+            $result[] = [
+                'id'              => (int)$ruleAction->id,
+                'created_at'      => $ruleAction->created_at->toAtomString(),
+                'updated_at'      => $ruleAction->updated_at->toAtomString(),
+                'type'            => $ruleAction->action_type,
+                'value'           => $ruleAction->action_value,
+                'order'           => $ruleAction->order,
+                'active'          => $ruleAction->active,
+                'stop_processing' => $ruleAction->stop_processing,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Rule $rule
+     *
+     * @return string
+     * @throws FireflyException
+     */
+    private function getRuleTrigger(Rule $rule): string
+    {
+        $moment   = null;
+        $triggers = $this->ruleRepository->getRuleTriggers($rule);
+        /** @var RuleTrigger $ruleTrigger */
+        foreach ($triggers as $ruleTrigger) {
+            if ('user_action' === $ruleTrigger->trigger_type) {
+                $moment = $ruleTrigger->trigger_value;
+            }
+        }
+        if (null === $moment) {
+            throw new FireflyException(sprintf('Rule #%d has no valid trigger moment. Edit it in the Firefly III user interface to correct this.', $rule->id));
+        }
+
+        return $moment;
+    }
+
+    /**
+     * @param Rule $rule
+     *
+     * @return array
+     */
+    private function triggers(Rule $rule): array
+    {
+        $result   = [];
+        $triggers = $this->ruleRepository->getRuleTriggers($rule);
+        /** @var RuleTrigger $ruleTrigger */
+        foreach ($triggers as $ruleTrigger) {
+            if ('user_action' === $ruleTrigger->trigger_type) {
+                continue;
+            }
+            $result[] = [
+                'id'              => (int)$ruleTrigger->id,
+                'created_at'      => $ruleTrigger->created_at->toAtomString(),
+                'updated_at'      => $ruleTrigger->updated_at->toAtomString(),
+                'type'            => $ruleTrigger->trigger_type,
+                'value'           => $ruleTrigger->trigger_value,
+                'order'           => $ruleTrigger->order,
+                'active'          => $ruleTrigger->active,
+                'stop_processing' => $ruleTrigger->stop_processing,
+            ];
+        }
+
+        return $result;
     }
 }

@@ -1,28 +1,29 @@
 <?php
 /**
  * PreferencesController.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers;
 
 use FireflyIII\Models\AccountType;
+use FireflyIII\Models\Preference;
 use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -33,6 +34,7 @@ class PreferencesController extends Controller
 {
     /**
      * PreferencesController constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -58,16 +60,23 @@ class PreferencesController extends Controller
     public function index(AccountRepositoryInterface $repository)
     {
         $accounts      = $repository->getAccountsByType([AccountType::DEFAULT, AccountType::ASSET]);
+        $accountIds    = $accounts->pluck('id')->toArray();
         $viewRangePref = app('preferences')->get('viewRange', '1M');
         /** @noinspection NullPointerExceptionInspection */
         $viewRange          = $viewRangePref->data;
-        $frontPageAccounts  = app('preferences')->get('frontPageAccounts', []);
+        $frontPageAccounts  = app('preferences')->get('frontPageAccounts', $accountIds);
         $language           = app('preferences')->get('language', config('firefly.default_language', 'en_US'))->data;
         $listPageSize       = app('preferences')->get('listPageSize', 50)->data;
         $customFiscalYear   = app('preferences')->get('customFiscalYear', 0)->data;
         $fiscalYearStartStr = app('preferences')->get('fiscalYearStart', '01-01')->data;
         $fiscalYearStart    = date('Y') . '-' . $fiscalYearStartStr;
         $tjOptionalFields   = app('preferences')->get('transaction_journal_optional_fields', [])->data;
+
+        // an important fallback is that the frontPageAccount array gets refilled automatically
+        // when it turns up empty.
+        if (0 === count($frontPageAccounts->data)) {
+            $frontPageAccounts = $accountIds;
+        }
 
         return view(
             'preferences.index',
@@ -91,14 +100,12 @@ class PreferencesController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function postIndex(Request $request)
     {
         // front page accounts
         $frontPageAccounts = [];
-        if (\is_array($request->get('frontPageAccounts'))) {
+        if (is_array($request->get('frontPageAccounts')) && count($request->get('frontPageAccounts')) > 0) {
             foreach ($request->get('frontPageAccounts') as $id) {
                 $frontPageAccounts[] = (int)$id;
             }
@@ -126,9 +133,14 @@ class PreferencesController extends Controller
         }
 
         // language:
+        /** @var Preference $currentLang */
+        $currentLang = app('preferences')->get('language', 'en_US');
         $lang = $request->get('language');
         if (array_key_exists($lang, config('firefly.languages'))) {
             app('preferences')->set('language', $lang);
+        }
+        if ($currentLang->data !== $lang) {
+            session()->flash('info', 'All translations are supplied by volunteers. There might be errors and mistakes. I appreciate your feedback.');
         }
 
         // optional fields for transactions:

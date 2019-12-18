@@ -1,30 +1,33 @@
 <?php
 /**
  * app.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 declare(strict_types=1);
+
+use FireflyIII\Providers\ImportServiceProvider;
 
 
 return [
     'name'            => envNonEmpty('APP_NAME', 'Firefly III'),
-    'env'             => envNonEmpty('APP_ENV', 'production'),
+    'env'             => envNonEmpty('APP_ENV', 'local'),
     'debug'           => env('APP_DEBUG', false),
     'url'             => envNonEmpty('APP_URL', 'http://localhost'),
     'timezone'        => envNonEmpty('TZ', 'UTC'),
@@ -74,7 +77,7 @@ return [
         FireflyIII\Providers\RouteServiceProvider::class,
 
         // own stuff:
-        TwigBridge\ServiceProvider::class,
+//        TwigBridge\ServiceProvider::class,
         PragmaRX\Google2FALaravel\ServiceProvider::class,
 
 
@@ -87,7 +90,6 @@ return [
         FireflyIII\Providers\BudgetServiceProvider::class,
         FireflyIII\Providers\CategoryServiceProvider::class,
         FireflyIII\Providers\CurrencyServiceProvider::class,
-        FireflyIII\Providers\ExportJobServiceProvider::class,
         FireflyIII\Providers\FireflyServiceProvider::class,
         FireflyIII\Providers\JournalServiceProvider::class,
         FireflyIII\Providers\PiggyBankServiceProvider::class,
@@ -97,8 +99,7 @@ return [
         FireflyIII\Providers\TagServiceProvider::class,
         FireflyIII\Providers\AdminServiceProvider::class,
         FireflyIII\Providers\RecurringServiceProvider::class,
-
-
+        ImportServiceProvider::class,
     ],
     'aliases'         => [
         'App'           => Illuminate\Support\Facades\App::class,
@@ -134,7 +135,7 @@ return [
         'URL'           => Illuminate\Support\Facades\URL::class,
         'Validator'     => Illuminate\Support\Facades\Validator::class,
         'View'          => Illuminate\Support\Facades\View::class,
-        'Twig'          => TwigBridge\Facade\Twig::class,
+        //'Twig'          => TwigBridge\Facade\Twig::class,
         'Form'          => Collective\Html\FormFacade::class,
         'Html'          => Collective\Html\HtmlFacade::class,
         'Preferences'   => \FireflyIII\Support\Facades\Preferences::class,
@@ -143,6 +144,10 @@ return [
         'Amount'        => \FireflyIII\Support\Facades\Amount::class,
         'Steam'         => \FireflyIII\Support\Facades\Steam::class,
         'ExpandedForm'  => \FireflyIII\Support\Facades\ExpandedForm::class,
+        'CurrencyForm'  => \FireflyIII\Support\Facades\CurrencyForm::class,
+        'AccountForm'   => \FireflyIII\Support\Facades\AccountForm::class,
+        'PiggyBankForm' => \FireflyIII\Support\Facades\PiggyBankForm::class,
+        'RuleForm'      => \FireflyIII\Support\Facades\RuleForm::class,
         'Google2FA'     => PragmaRX\Google2FALaravel\Facade::class,
 
     ],

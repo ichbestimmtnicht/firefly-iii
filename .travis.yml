@@ -1,29 +1,34 @@
-language: php
-php:
-  - 7.2
-
-cache:
-    directories:
-        - vendor
-        - $HOME/.composer/cache
-
-install:
-  - rm composer.lock
-  - composer update --no-scripts
-  - cp .env.testing .env
-  - php artisan clear-compiled
-  - php artisan env
-  - wget -q https://github.com/firefly-iii/test-data/raw/master/storage/database.sqlite -O storage/database/database.sqlite
-  - mkdir -p build/logs
-
-script:
-  - ./vendor/bin/phpunit -c phpunit.coverage.xml
-
-after_success:
-  - travis_retry php vendor/bin/php-coveralls -x storage/build/clover-all.xml
+sudo: required
+language: bash
 
 # safelist
 branches:
   only:
   - develop
   - master
+
+services:
+  - docker
+
+jobs:
+  include:
+    - dist: xenial
+      arch: amd64
+      env: ARCH=amd64 CHANNEL=stable VERSION=4.8.2
+      stage: build
+      script: ./.deploy/docker/travis.sh
+    - dist: xenial
+      arch: amd64
+      env: ARCH=arm CHANNEL=stable VERSION=4.8.2
+      stage: build
+      script: ./.deploy/docker/travis.sh
+    - dist: xenial
+      arch: arm64
+      env: ARCH=arm64 CHANNEL=stable VERSION=4.8.2
+      stage: build
+      script: ./.deploy/docker/travis.sh
+    - dist: xenial
+      arch: amd64
+      env: CHANNEL=stable VERSION=4.8.2
+      stage: manifest
+      script: ./.deploy/docker/manifest.sh

@@ -1,34 +1,36 @@
 <?php
 /**
  * UpdateController.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /** @noinspection PhpMethodParametersCountMismatchInspection */
 declare(strict_types=1);
 
 namespace FireflyIII\Http\Controllers\Admin;
 
-use FireflyConfig;
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Helpers\Update\UpdateTrait;
 use FireflyIII\Http\Controllers\Controller;
 use FireflyIII\Http\Middleware\IsDemoUser;
 use FireflyIII\Http\Middleware\IsSandStormUser;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Log;
 
 /**
  * Class HomeController.
@@ -44,7 +46,7 @@ class UpdateController extends Controller
     {
         parent::__construct();
         $this->middleware(
-            function ($request, $next) {
+            static function ($request, $next) {
                 app('view')->share('title', (string)trans('firefly.administration'));
                 app('view')->share('mainTitleIcon', 'fa-hand-spock-o');
 
@@ -64,17 +66,25 @@ class UpdateController extends Controller
      */
     public function index()
     {
-        $subTitle     = (string)trans('firefly.update_check_title');
-        $subTitleIcon = 'fa-star';
-        $permission   = app('fireflyconfig')->get('permission_update_check', -1);
-        $selected     = $permission->data;
-        $options      = [
+        $subTitle        = (string)trans('firefly.update_check_title');
+        $subTitleIcon    = 'fa-star';
+        $permission      = app('fireflyconfig')->get('permission_update_check', -1);
+        $channel         = app('fireflyconfig')->get('update_channel', 'stable');
+        $selected        = $permission->data;
+        $channelSelected = $channel->data;
+        $options         = [
             -1 => (string)trans('firefly.updates_ask_me_later'),
             0  => (string)trans('firefly.updates_do_not_check'),
             1  => (string)trans('firefly.updates_enable_check'),
         ];
 
-        return view('admin.update.index', compact('subTitle', 'subTitleIcon', 'selected', 'options'));
+        $channelOptions = [
+            'stable' => (string)trans('firefly.update_channel_stable'),
+            'beta'   => (string)trans('firefly.update_channel_beta'),
+            'alpha'  => (string)trans('firefly.update_channel_alpha'),
+        ];
+
+        return view('admin.update.index', compact('subTitle', 'subTitleIcon', 'selected', 'options', 'channelSelected', 'channelOptions'));
     }
 
     /**
@@ -87,8 +97,11 @@ class UpdateController extends Controller
     public function post(Request $request)
     {
         $checkForUpdates = (int)$request->get('check_for_updates');
-        FireflyConfig::set('permission_update_check', $checkForUpdates);
-        FireflyConfig::set('last_update_check', time());
+        $channel         = $request->get('update_channel');
+        $channel         = in_array($channel, ['stable', 'beta', 'alpha'], true) ? $channel : 'stable';
+        app('fireflyconfig')->set('permission_update_check', $checkForUpdates);
+        app('fireflyconfig')->set('last_update_check', time());
+        app('fireflyconfig')->set('update_channel', $channel);
         session()->flash('success', (string)trans('firefly.configuration_updated'));
 
         return redirect(route('admin.update-check'));
@@ -97,18 +110,46 @@ class UpdateController extends Controller
     /**
      * Does a manual update check.
      */
-    public function updateCheck()
+    public function updateCheck(): JsonResponse
     {
-        $latestRelease = $this->getLatestRelease();
-        $versionCheck  = $this->versionCheck($latestRelease);
-        $resultString  = $this->parseResult($versionCheck, $latestRelease);
+        $success       = true;
+        $latestRelease = '1.0';
+        $resultString  = '';
+        $versionCheck  = -2;
+        $channel       = app('fireflyconfig')->get('update_channel', 'stable')->data;
+
+        try {
+            $latestRelease = $this->getLatestRelease();
+        } catch (FireflyException $e) {
+            Log::error($e->getMessage());
+            $success = false;
+        }
+
+        // if error, tell the user.
+        if (false === $success) {
+            $resultString = (string)trans('firefly.update_check_error');
+            session()->flash('error', $resultString);
+        }
+
+        // if not, compare and tell the user.
+        if (true === $success) {
+            $versionCheck = $this->versionCheck($latestRelease);
+            $resultString = $this->parseResult($versionCheck, $latestRelease);
+        }
+
+        Log::debug(sprintf('Result string is: "%s"', $resultString));
 
         if (0 !== $versionCheck && '' !== $resultString) {
             // flash info
             session()->flash('info', $resultString);
         }
-        FireflyConfig::set('last_update_check', time());
+        app('fireflyconfig')->set('last_update_check', time());
 
-        return response()->json(['result' => $resultString]);
+        return response()->json(
+            [
+                'result'  => $resultString,
+                'channel' => $channel,
+            ]
+        );
     }
 }

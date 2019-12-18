@@ -1,29 +1,28 @@
 <?php
 /**
  * TransactionJournalLink.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
 namespace FireflyIII\Models;
 
 use Carbon\Carbon;
-use Crypt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -42,6 +41,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property int                $link_type_id
  * @property int                $source_id
  * @property int                $destination_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\FireflyIII\Models\Note[] $notes
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereDestinationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereLinkTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\FireflyIII\Models\TransactionJournalLink whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class TransactionJournalLink extends Model
 {
@@ -95,22 +106,6 @@ class TransactionJournalLink extends Model
 
     /**
      * @codeCoverageIgnore
-     *
-     * @param $value
-     *
-     * @return null|string
-     */
-    public function getCommentAttribute($value): ?string
-    {
-        if (null !== $value) {
-            return app('steam')->tryDecrypt($value);
-        }
-
-        return null;
-    }
-
-    /**
-     * @codeCoverageIgnore
      * @return BelongsTo
      */
     public function linkType(): BelongsTo
@@ -125,23 +120,6 @@ class TransactionJournalLink extends Model
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'noteable');
-    }
-
-    /**
-     * @codeCoverageIgnore
-     *
-     * @param $value
-     *
-     * @throws \Illuminate\Contracts\Encryption\EncryptException
-     */
-    public function setCommentAttribute($value): void
-    {
-        if (null !== $value && \strlen($value) > 0) {
-            $this->attributes['comment'] = Crypt::encrypt($value);
-
-            return;
-        }
-        $this->attributes['comment'] = null;
     }
 
     /**

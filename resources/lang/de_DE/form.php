@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Kreditkartenlimit',
     'automatch'                   => 'Automatisch reagieren',
     'skip'                        => 'Überspringen',
+    'enabled'                     => 'Aktiviert',
     'name'                        => 'Name',
     'active'                      => 'Aktiv',
     'amount_min'                  => 'Mindestbetrag',
@@ -37,6 +38,7 @@ return [
     'match'                       => 'Reagiert auf',
     'strict'                      => 'Strenger Modus',
     'repeat_freq'                 => 'Wiederholungen',
+    'update_channel'              => 'Aktualisierungskanal',
     'journal_currency_id'         => 'Währung',
     'currency_id'                 => 'Währung',
     'transaction_currency_id'     => 'Währung',
@@ -44,6 +46,7 @@ return [
     'attachments'                 => 'Anhänge',
     'journal_amount'              => 'Betrag',
     'journal_source_name'         => 'Erlöskonto (Herkunft)',
+    'keep_bill_id'                => 'Rechnung',
     'journal_source_id'           => 'Anlagenkonto (Herkunft)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Passwortsicherheit überprüfen',
@@ -51,24 +54,25 @@ return [
     'destination_account'         => 'Zielkonto',
     'journal_destination_id'      => 'Anlagenkonto (Ziel)',
     'asset_destination_account'   => 'Zielkonto',
-    'include_net_worth'           => 'Im Nettovermögen enthalten',
+    'include_net_worth'           => 'Im Eigenkapital enthalten',
     'asset_source_account'        => 'Quellkonto',
     'journal_description'         => 'Beschreibung',
     'note'                        => 'Notizen',
+    'store_new_transaction'       => 'Neue Buchung speichern',
     'split_journal'               => 'Diese Überweisung aufteilen',
     'split_journal_explanation'   => 'Diese Überweisung in mehrere Teile aufteilen',
     'currency'                    => 'Währung',
     'account_id'                  => 'Bestandskonto',
     'budget_id'                   => 'Budget',
-    'openingBalance'              => 'Eröffnungsbilanz',
+    'opening_balance'             => 'Eröffnungsbilanz',
     'tagMode'                     => 'Schlagwort-Modus',
     'tag_position'                => 'Schlagwort-Speicherort',
-    'virtualBalance'              => 'Virtueller Kontostand',
+    'virtual_balance'             => 'Virtueller Kontostand',
     'targetamount'                => 'Zielbetrag',
-    'accountRole'                 => 'Rolle des Kontos',
-    'openingBalanceDate'          => 'Eröffnungsbilanzdatum',
-    'ccType'                      => 'Zahlungsplan der Kreditkarte',
-    'ccMonthlyPaymentDate'        => 'Monatliches Zahlungsdatum der Kreditkarte',
+    'account_role'                => 'Kontenfunktion',
+    'opening_balance_date'        => 'Eröffnungsbilanzdatum',
+    'cc_type'                     => 'Kreditkartenzahlungsplan',
+    'cc_monthly_payment_date'     => 'Monatlicher Kreditkartenzahlungsplan',
     'piggy_bank_id'               => 'Sparschwein',
     'returnHere'                  => 'Hierhin zurückkehren',
     'returnHereExplanation'       => 'Nach dem Speichern hierher zurückkehren, um ein weiteres Element zu erstellen.',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Zeichen',
     'code'                        => 'Schlüssel',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Kontonummer',
+    'account_number'              => 'Kontonummer',
     'creditCardNumber'            => 'Kreditkartennummer',
     'has_headers'                 => 'Kopfzeilen',
     'date_format'                 => 'Datumsformat',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Verarbeitung beenden',
     'start_date'                  => 'Anfang des Bereichs',
     'end_date'                    => 'Ende des Bereichs',
-    'export_start_range'          => 'Beginn des Exportbereichs',
-    'export_end_range'            => 'Ende des Exportbereichs',
-    'export_format'               => 'Dateiformat',
     'include_attachments'         => 'Hochgeladene Anhänge hinzufügen',
     'include_old_uploads'         => 'Importierte Daten hinzufügen',
-    'accounts'                    => 'Exportiere die Überweisungen von diesem Konto',
     'delete_account'              => 'Konto „:name” löschen',
     'delete_bill'                 => 'Rechnung „:name” löschen',
     'delete_budget'               => 'Budget „:name” löschen',
@@ -161,7 +161,7 @@ return [
     'bill_areYouSure'             => 'Möchten Sie die Rechnung „:name” wirklich löschen?',
     'rule_areYouSure'             => 'Sind Sie sicher, dass Sie die Regel mit dem Titel ":title" löschen möchten?',
     'ruleGroup_areYouSure'        => 'Sind Sie sicher, dass sie die Regelgruppe ":title" löschen möchten?',
-    'budget_areYouSure'           => 'Möchten Sie den Kostenrahmen „:name” wirklich löschen?',
+    'budget_areYouSure'           => 'Möchten Sie das Budget „:name” wirklich löschen?',
     'category_areYouSure'         => 'Möchten Sie die Kategorie „:name” wirklich löschen?',
     'recurring_areYouSure'        => 'Möchten Sie den Dauerauftrag „:title” wirklich löschen?',
     'currency_areYouSure'         => 'Möchten Sie die Währung „:name” wirklich löschen?',
@@ -180,7 +180,7 @@ return [
     'also_delete_rules'           => 'Die einzige Regel, die mit diesem Konto verknüpft ist, wird ebenfalls gelöscht. | Alle :count Regeln, die mit diesem Konto verknüpft sind, werden ebenfalls gelöscht.',
     'also_delete_piggyBanks'      => 'Das einzige Sparschwein, das mit diesem Konto verknüpft ist, wird ebenfalls gelöscht. | Alle :count Sparschweine, die mit diesem Konto verknüpft sind, werden ebenfalls gelöscht.',
     'bill_keep_transactions'      => 'Die einzige mit dieser Rechnung verbundene Buchung wird nicht gelöscht. | Alle :count Buchungen, die mit dieser Rechnung verbunden sind, werden nicht gelöscht.',
-    'budget_keep_transactions'    => 'Die einzige mit diesem Budget zugeordnete Buchung wird nicht gelöscht. | Alle :count Buchungen, die diesem Budget zugeordnet sind, werden nicht gelöscht.',
+    'budget_keep_transactions'    => 'Die einzige diesem Budget zugeordnete Buchung wird nicht gelöscht. | Alle :count Buchungen, die diesem Budget zugeordnet sind, werden nicht gelöscht.',
     'category_keep_transactions'  => 'Die einzige Buchung, die mit dieser Kategorie verbunden ist, wird nicht gelöscht. | Alle :count Buchungen, die mit dieser Kategorie verbunden sind, werden nicht gelöscht.',
     'recurring_keep_transactions' => 'Die einzige Buchung, die durch diesen Dauerauftrag erstellt wurde, wird nicht gelöscht. | Alle :count Buchungen, die durch diesen Dauerauftrag erstellt wurden, werden nicht gelöscht.',
     'tag_keep_transactions'       => 'Das einzige mit dieser Rechnung verbundene Schlagwort wird nicht gelöscht. | Alle :count Schlagwörter, die mit dieser Rechnung verbunden sind, werden nicht gelöscht.',
@@ -191,6 +191,7 @@ return [
     'password_confirmation' => 'Passwort (wiederholen)',
     'blocked'               => 'Ist blockiert?',
     'blocked_code'          => 'Grund für Block',
+    'login_name'            => 'Login',
 
     // import
     'apply_rules'           => 'Regeln anwenden',
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Öffentlicher Schlüssel',
     'country_code'          => 'Ländercode',
     'provider_code'         => 'Bank oder Datenanbieter',
+    'fints_url'             => 'FinTS-API-URL',
+    'fints_port'            => 'Port',
+    'fints_bank_code'       => 'Bankleitzahl',
+    'fints_username'        => 'Benutzername',
+    'fints_password'        => 'PIN/Passwort',
+    'fints_account'         => 'FinTS-Konto',
+    'local_account'         => 'Firefly-III-Konto',
+    'from_date'             => 'Datum ab',
+    'to_date'               => 'Datum bis',
+
 
     'due_date'                => 'Fälligkeitstermin',
     'payment_date'            => 'Zahlungsdatum',
@@ -242,5 +253,10 @@ return [
     'calendar'                => 'Kalender',
     'weekend'                 => 'Wochenende',
     'client_secret'           => 'Kundengeheimnis',
+
+    'withdrawal_destination_id' => 'Zielkonto',
+    'deposit_source_id'         => 'Quellkonto',
+    'expected_on'               => 'Erwartet am',
+    'paid'                      => 'Bezahlt',
 
 ];

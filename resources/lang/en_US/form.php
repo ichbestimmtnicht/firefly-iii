@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Credit card limit',
     'automatch'                   => 'Match automatically',
     'skip'                        => 'Skip',
+    'enabled'                     => 'Enabled',
     'name'                        => 'Name',
     'active'                      => 'Active',
     'amount_min'                  => 'Minimum amount',
@@ -37,6 +38,7 @@ return [
     'match'                       => 'Matches on',
     'strict'                      => 'Strict mode',
     'repeat_freq'                 => 'Repeats',
+    'update_channel'              => 'Update channel',
     'journal_currency_id'         => 'Currency',
     'currency_id'                 => 'Currency',
     'transaction_currency_id'     => 'Currency',
@@ -44,6 +46,7 @@ return [
     'attachments'                 => 'Attachments',
     'journal_amount'              => 'Amount',
     'journal_source_name'         => 'Revenue account (source)',
+    'keep_bill_id'                => 'Bill',
     'journal_source_id'           => 'Asset account (source)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Verify password security',
@@ -55,20 +58,21 @@ return [
     'asset_source_account'        => 'Source account',
     'journal_description'         => 'Description',
     'note'                        => 'Notes',
+    'store_new_transaction'       => 'Store new transaction',
     'split_journal'               => 'Split this transaction',
     'split_journal_explanation'   => 'Split this transaction in multiple parts',
     'currency'                    => 'Currency',
     'account_id'                  => 'Asset account',
     'budget_id'                   => 'Budget',
-    'openingBalance'              => 'Opening balance',
+    'opening_balance'             => 'Opening balance',
     'tagMode'                     => 'Tag mode',
     'tag_position'                => 'Tag location',
-    'virtualBalance'              => 'Virtual balance',
+    'virtual_balance'             => 'Virtual balance',
     'targetamount'                => 'Target amount',
-    'accountRole'                 => 'Account role',
-    'openingBalanceDate'          => 'Opening balance date',
-    'ccType'                      => 'Credit card payment plan',
-    'ccMonthlyPaymentDate'        => 'Credit card monthly payment date',
+    'account_role'                => 'Account role',
+    'opening_balance_date'        => 'Opening balance date',
+    'cc_type'                     => 'Credit card payment plan',
+    'cc_monthly_payment_date'     => 'Credit card monthly payment date',
     'piggy_bank_id'               => 'Piggy bank',
     'returnHere'                  => 'Return here',
     'returnHereExplanation'       => 'After storing, return here to create another one.',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Symbol',
     'code'                        => 'Code',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Account number',
+    'account_number'              => 'Account number',
     'creditCardNumber'            => 'Credit card number',
     'has_headers'                 => 'Headers',
     'date_format'                 => 'Date format',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Stop processing',
     'start_date'                  => 'Start of range',
     'end_date'                    => 'End of range',
-    'export_start_range'          => 'Start of export range',
-    'export_end_range'            => 'End of export range',
-    'export_format'               => 'File format',
     'include_attachments'         => 'Include uploaded attachments',
     'include_old_uploads'         => 'Include imported data',
-    'accounts'                    => 'Export transactions from these accounts',
     'delete_account'              => 'Delete account ":name"',
     'delete_bill'                 => 'Delete bill ":name"',
     'delete_budget'               => 'Delete budget ":name"',
@@ -191,6 +191,7 @@ return [
     'password_confirmation' => 'Password (again)',
     'blocked'               => 'Is blocked?',
     'blocked_code'          => 'Reason for block',
+    'login_name'            => 'Login',
 
     // import
     'apply_rules'           => 'Apply rules',
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Public key',
     'country_code'          => 'Country code',
     'provider_code'         => 'Bank or data-provider',
+    'fints_url'             => 'FinTS API URL',
+    'fints_port'            => 'Port',
+    'fints_bank_code'       => 'Bank code',
+    'fints_username'        => 'Username',
+    'fints_password'        => 'PIN / Password',
+    'fints_account'         => 'FinTS account',
+    'local_account'         => 'Firefly III account',
+    'from_date'             => 'Date from',
+    'to_date'               => 'Date to',
+
 
     'due_date'                => 'Due date',
     'payment_date'            => 'Payment date',
@@ -242,5 +253,10 @@ return [
     'calendar'                => 'Calendar',
     'weekend'                 => 'Weekend',
     'client_secret'           => 'Client secret',
+
+    'withdrawal_destination_id' => 'Destination account',
+    'deposit_source_id'         => 'Source account',
+    'expected_on'               => 'Expected on',
+    'paid'                      => 'Paid',
 
 ];

@@ -1,22 +1,22 @@
 <?php
 /**
  * RuleGroupRequest.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -24,11 +24,13 @@ declare(strict_types=1);
 namespace FireflyIII\Api\V1\Requests;
 
 use FireflyIII\Models\RuleGroup;
+use FireflyIII\Rules\IsBoolean;
 
 
 /**
- *
+ * @codeCoverageIgnore
  * Class RuleGroupRequest
+ * TODO AFTER 4.8,0: split this into two request classes.
  */
 class RuleGroupRequest extends Request
 {
@@ -50,10 +52,16 @@ class RuleGroupRequest extends Request
      */
     public function getAll(): array
     {
+        $active = true;
+
+        if (null !== $this->get('active')) {
+            $active = $this->boolean('active');
+        }
+
         return [
             'title'       => $this->string('title'),
             'description' => $this->string('description'),
-            'active'      => $this->boolean('active'),
+            'active'      => $active,
         ];
     }
 
@@ -67,7 +75,7 @@ class RuleGroupRequest extends Request
         $rules = [
             'title'       => 'required|between:1,100|uniqueObjectForUser:rule_groups,title',
             'description' => 'between:1,5000|nullable',
-            'active'      => 'required|boolean',
+            'active'      => [new IsBoolean],
         ];
         switch ($this->method()) {
             default:

@@ -1,22 +1,22 @@
 <?php
 /**
  * TransactionCurrencyFactory.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 /** @noinspection PhpDynamicAsStaticMethodCallInspection */
@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace FireflyIII\Factory;
 
+use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\TransactionCurrency;
 use Illuminate\Database\QueryException;
 use Log;
@@ -37,21 +38,24 @@ use Log;
 class TransactionCurrencyFactory
 {
     /**
-     * Constructor.
+     * TransactionCurrencyFactory constructor.
+     *
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
-        if ('testing' === env('APP_ENV')) {
-            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', \get_class($this)));
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
         }
     }
 
     /**
      * @param array $data
      *
-     * @return TransactionCurrency|null
+     * @return TransactionCurrency
+     * @throws FireflyException
      */
-    public function create(array $data): ?TransactionCurrency
+    public function create(array $data): TransactionCurrency
     {
         try {
             /** @var TransactionCurrency $currency */
@@ -61,11 +65,13 @@ class TransactionCurrencyFactory
                     'code'           => $data['code'],
                     'symbol'         => $data['symbol'],
                     'decimal_places' => $data['decimal_places'],
+                    'enabled'        => $data['enabled'],
                 ]
             );
         } catch (QueryException $e) {
             $result = null;
             Log::error(sprintf('Could not create new currency: %s', $e->getMessage()));
+            throw new FireflyException('400004: Could not store new currency.');
         }
 
         return $result;
@@ -76,7 +82,7 @@ class TransactionCurrencyFactory
      * @param null|string $currencyCode
      *
      * @return TransactionCurrency|null
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     *
      */
     public function find(?int $currencyId, ?string $currencyCode): ?TransactionCurrency
     {
@@ -84,7 +90,7 @@ class TransactionCurrencyFactory
         $currencyId   = (int)$currencyId;
 
         if ('' === $currencyCode && 0 === $currencyId) {
-            Log::warning('Cannot find anything on empty currency code and empty currency ID!');
+            Log::debug('Cannot find anything on empty currency code and empty currency ID!');
 
             return null;
         }
@@ -98,7 +104,7 @@ class TransactionCurrencyFactory
             Log::warning(sprintf('Currency ID is %d but found nothing!', $currencyId));
         }
         // then by code:
-        if (\strlen($currencyCode) > 0) {
+        if ('' !== $currencyCode) {
             $currency = TransactionCurrency::whereCode($currencyCode)->first();
             if (null !== $currency) {
                 return $currency;

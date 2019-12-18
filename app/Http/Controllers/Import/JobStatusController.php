@@ -1,22 +1,22 @@
 <?php
 /**
  * JobStatusController.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -85,7 +85,7 @@ class JobStatusController extends Controller
      */
     public function json(ImportJob $importJob): JsonResponse
     {
-        $count = \count($importJob->transactions);
+        $count = $this->repository->countTransactions($importJob);
         $json  = [
             'status'               => $importJob->status,
             'errors'               => $importJob->errors,
@@ -106,7 +106,7 @@ class JobStatusController extends Controller
 
         // if count is zero:
         if (null !== $importJob->tag_id) {
-            $count = $importJob->tag->transactionJournals->count();
+            $count = $this->repository->countByTag($importJob);
         }
         if (0 === $count) {
             $json['report_txt'] = (string)trans('import.result_no_transactions');
@@ -135,11 +135,11 @@ class JobStatusController extends Controller
      */
     public function start(ImportJob $importJob): JsonResponse
     {
-        Log::debug('Now in JobStatusController::start');
+        Log::info('Now in JobStatusController::start');
         // catch impossible status:
         $allowed = ['ready_to_run', 'need_job_config'];
 
-        if (null !== $importJob && !\in_array($importJob->status, $allowed, true)) {
+        if (null !== $importJob && !in_array($importJob->status, $allowed, true)) {
             Log::error(sprintf('Job is not ready. Status should be in array, but is %s', $importJob->status), $allowed);
             $this->repository->setStatus($importJob, 'error');
 
@@ -152,8 +152,11 @@ class JobStatusController extends Controller
         $className      = config($key);
         if (null === $className || !class_exists($className)) {
             // @codeCoverageIgnoreStart
+            $message = sprintf('Cannot find import routine class for job of type "%s".', $importProvider);
+            Log::error($message);
+
             return response()->json(
-                ['status' => 'NOK', 'message' => sprintf('Cannot find import routine class for job of type "%s".', $importProvider)]
+                ['status' => 'NOK', 'message' => $message]
             );
             // @codeCoverageIgnoreEnd
         }
@@ -179,6 +182,8 @@ class JobStatusController extends Controller
         }
 
         // expect nothing from routine, just return OK to user.
+        Log::info('Now finished with JobStatusController::start');
+
         return response()->json(['status' => 'OK', 'message' => 'stage_finished']);
     }
 
@@ -194,9 +199,10 @@ class JobStatusController extends Controller
      */
     public function store(ImportJob $importJob): JsonResponse
     {
+        Log::info('Now in JobStatusController::store');
         // catch impossible status:
         $allowed = ['provider_finished', 'storing_data'];
-        if (null !== $importJob && !\in_array($importJob->status, $allowed, true)) {
+        if (null !== $importJob && !in_array($importJob->status, $allowed, true)) {
             Log::error(sprintf('Job is not ready. Status should be in array, but is %s', $importJob->status), $allowed);
 
             return response()->json(
@@ -222,6 +228,7 @@ class JobStatusController extends Controller
         // set storage to be finished:
         $this->repository->setStatus($importJob, 'storage_finished');
 
+        Log::info('Now finished with JobStatusController::start');
 
         // expect nothing from routine, just return OK to user.
         return response()->json(['status' => 'OK', 'message' => 'storage_finished']);

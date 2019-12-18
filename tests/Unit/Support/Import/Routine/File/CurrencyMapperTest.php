@@ -1,22 +1,22 @@
 <?php
 /**
  * CurrencyMapperTest.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -27,11 +27,14 @@ namespace Tests\Unit\Support\Import\Routine\File;
 use FireflyIII\Models\TransactionCurrency;
 use FireflyIII\Repositories\Currency\CurrencyRepositoryInterface;
 use FireflyIII\Support\Import\Routine\File\CurrencyMapper;
-use Tests\TestCase;
 use Log;
+use Tests\TestCase;
 
 /**
  * Class CurrencyMapperTest
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class CurrencyMapperTest extends TestCase
 {
@@ -41,7 +44,7 @@ class CurrencyMapperTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        Log::info(sprintf('Now in %s.', \get_class($this)));
+        Log::info(sprintf('Now in %s.', get_class($this)));
     }
 
     /**
@@ -111,13 +114,13 @@ class CurrencyMapperTest extends TestCase
 
         // nothing found, mapper will try to create it.
         $repository->shouldReceive('store')
-                   ->withArgs([['code' => $currency->code, 'name' => $currency->name, 'symbol' => $currency->symbol, 'decimal_places' => 2]])
+                   ->withArgs([['code' => $currency->code, 'name' => $currency->name, 'symbol' => $currency->symbol, 'enabled' => true, 'decimal_places' => 2]])
                    ->once()->andReturn($currency);
 
         $mapper = new CurrencyMapper();
         $mapper->setUser($this->user());
 
-        $result = $mapper->map(null, ['name' => $currency->name, 'code' => $currency->code, 'symbol' => $currency->symbol]);
+        $result = $mapper->map(null, ['name' => $currency->name, 'code' => $currency->code, 'enabled' => true, 'symbol' => $currency->symbol]);
         $this->assertEquals($currency->id, $result->id);
     }
 

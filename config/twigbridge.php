@@ -1,23 +1,22 @@
 <?php
-
 /**
  * twigbridge.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -34,6 +33,15 @@ use TwigBridge\Extension\Loader\Facades;
 use TwigBridge\Extension\Loader\Filters;
 use TwigBridge\Extension\Loader\Functions;
 use TwigBridge\Twig\Template;
+
+/**
+ * This file is part of the TwigBridge package.
+ *
+ * @copyright Robert Crowe <hello@vivalacrowe.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /**
  * Configuration options for Twig.
@@ -67,6 +75,7 @@ return [
             'debug'               => env('APP_DEBUG', false),
 
             // The charset used by the templates.
+            // default: utf-8
             'charset'             => 'utf-8',
 
             // The base template class to use for generated templates.
@@ -119,7 +128,7 @@ return [
         |
         | Enabled extensions.
         |
-        | `Twig_Extension_Debug` is enabled automatically if twig.debug is TRUE.
+        | `Twig\Extension\DebugExtension` is enabled automatically if twig.debug is TRUE.
         |
         */
         'enabled'   => [
@@ -170,7 +179,7 @@ return [
         |
         */
         'facades'   => [
-            'Breadcrumbs'  => [
+            'Breadcrumbs'   => [
                 'is_safe' => [
                     'render',
                 ],
@@ -184,12 +193,36 @@ return [
             'Steam',
             'Config',
             'Request',
-            'ExpandedForm' => [
-                'is_safe' => ['date', 'text', 'select', 'balance', 'optionsList', 'checkbox', 'amount', 'tags', 'integer', 'textarea', 'location', 'file',
-                              'staticText', 'password', 'nonSelectableAmount', 'number', 'assetAccountList', 'amountNoCurrency', 'currencyList',
-                              'ruleGroupList', 'assetAccountCheckList', 'ruleGroupListWithEmpty', 'piggyBankList', 'currencyListEmpty',
-                              'activeAssetAccountList', 'percentage', 'activeLongAccountList', 'longAccountList',],],
-            'Form'         => ['is_safe' => ['input', 'select', 'checkbox', 'model', 'open', 'radio', 'textarea', 'file',],
+            'Form'          => ['is_safe' => ['input', 'select', 'checkbox', 'model', 'open', 'radio', 'textarea', 'file',],],
+            'ExpandedForm'  => [
+                'is_safe' => [
+                    'date', 'text', 'select', 'balance', 'optionsList', 'checkbox', 'amount', 'tags', 'integer', 'textarea', 'location', 'file', 'staticText',
+                    'password', 'nonSelectableAmount', 'number', 'amountNoCurrency', 'percentage',
+
+
+                ],
+            ],
+            'AccountForm'   => [
+                'is_safe' => [
+                    'activeAssetAccountList', 'activeLongAccountList', 'activeWithdrawalDestinations', 'activeDepositDestinations',
+                    'assetAccountCheckList', 'assetAccountList', 'longAccountList',
+                ],
+            ],
+            'CurrencyForm'  => [
+                'is_safe' => [
+                    'currencyList', 'currencyListEmpty', 'balanceAll',
+                ],
+            ],
+            'PiggyBankForm' =>
+                [
+                    'is_safe' => [
+                        'piggyBankList',
+                    ],
+                ],
+            'RuleForm'      => [
+                'is_safe' => [
+                    'ruleGroupList', 'ruleGroupListWithEmpty',
+                ],
             ],
         ],
 
@@ -202,7 +235,7 @@ return [
         | Available functions. Access like `{{ secure_url(...) }}`.
         |
         | Each function can take an optional array of options. These options are
-        | passed directly to `Twig_SimpleFunction`.
+        | passed directly to `Twig\TwigFunction`.
         |
         | So for example, to mark a function as safe you can do the following:
         |
@@ -226,7 +259,7 @@ return [
             'elixir',
             'head',
             'last',
-            'old',
+            'mix',
         ],
 
         /*
@@ -237,7 +270,7 @@ return [
         | Available filters. Access like `{{ variable|filter }}`.
         |
         | Each filter can take an optional array of options. These options are
-        | passed directly to `Twig_SimpleFilter`.
+        | passed directly to `Twig\TwigFilter`.
         |
         | So for example, to mark a filter as safe you can do the following:
         |

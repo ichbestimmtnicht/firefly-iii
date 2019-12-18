@@ -11,7 +11,7 @@ mkdir -p /var/log
 mkdir -p /var/log/mysql
 mkdir -p /var/log/nginx
 # Wipe /var/run, since pidfiles and socket files from previous launches should go away
-# TODO someday: I'd prefer a tmpfs for these.
+# Someday: I'd prefer a tmpfs for these.
 rm -rf /var/run
 mkdir -p /var/run
 rm -rf /var/tmp
@@ -25,9 +25,9 @@ mkdir -p /var/storage/build
 mkdir -p /var/storage/database
 mkdir -p /var/storage/debugbar
 mkdir -p /var/storage/export
-mkdir -p /var/storage/framework/cache
+mkdir -p /var/storage/framework/cache/v1
 mkdir -p /var/storage/framework/sessions
-mkdir -p /var/storage/framework/views
+mkdir -p /var/storage/framework/views/v1
 mkdir -p /var/storage/logs
 mkdir -p /var/storage/upload
 
@@ -57,10 +57,6 @@ echo "Done!"
 echo "Migrating..."
 php /opt/app/artisan migrate --seed --force
 echo "Done!"
-
-echo "Clear cache.."
-php /opt/app/artisan cache:clear
-echo "Done"
 
 # Start nginx.
 /usr/sbin/nginx -c /opt/app/.sandstorm/service-config/nginx.conf -g "daemon off;"

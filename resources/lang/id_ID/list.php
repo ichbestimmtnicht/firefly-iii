@@ -2,22 +2,22 @@
 
 /**
  * list.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -34,11 +34,15 @@ return [
     'name'                    => 'Nama',
     'role'                    => 'Peran',
     'currentBalance'          => 'Saldo saat ini',
-    'linked_to_rules'         => 'Relevant rules',
+    'linked_to_rules'         => 'Aturan yang relevan',
     'active'                  => 'Aktif?',
+    'percentage'              => 'pct.',
+    'next_due'                => 'Next due',
+    'transaction_type'        => 'Type',
     'lastActivity'            => 'Aktifitas terakhir',
     'balanceDiff'             => 'Perbedaan saldo',
     'matchesOn'               => 'Cocok di',
+    'other_meta_data'         => 'Other meta data',
     'account_type'            => 'Jenis akun',
     'created_at'              => 'Dibuat di',
     'account'                 => 'Akun',
@@ -87,12 +91,11 @@ return [
     'attachments_count'       => 'Jumlah lampiran',
     'bills_count'             => 'Jumlah tagihan',
     'categories_count'        => 'Jumlah kategori',
-    'export_jobs_count'       => 'Jumlah pekerjaan ekspor',
     'import_jobs_count'       => 'Jumlah pekerjaan impor',
     'budget_count'            => 'Jumlah anggaran',
     'rule_and_groups_count'   => 'Jumlah aturan dan kelompok aturan',
     'tags_count'              => 'Jumlah label',
-    'tags'                    => 'Tags',
+    'tags'                    => 'Label',
     'inward'                  => 'Deskripsi dalam',
     'outward'                 => 'Deskripsi luar',
     'number_of_transactions'  => 'Jumlah transaksi',
@@ -103,34 +106,34 @@ return [
     'sum_deposits'            => 'Jumlah simpanan',
     'sum_transfers'           => 'Jumlah transfer',
     'reconcile'               => 'Menyesuaikan',
-    'account_on_spectre'      => 'Account (Spectre)',
-    'account_on_ynab'         => 'Account (YNAB)',
-    'do_import'               => 'Import from this account',
-    'sepa-ct-id'              => 'SEPA End to End Identifier',
-    'sepa-ct-op'              => 'SEPA Opposing Account Identifier',
-    'sepa-db'                 => 'SEPA Mandate Identifier',
-    'sepa-country'            => 'SEPA Country',
-    'sepa-cc'                 => 'SEPA Clearing Code',
-    'sepa-ep'                 => 'SEPA External Purpose',
-    'sepa-ci'                 => 'SEPA Creditor Identifier',
-    'sepa-batch-id'           => 'SEPA Batch ID',
-    'external_id'             => 'External ID',
-    'account_at_bunq'         => 'Account with bunq',
-    'file_name'               => 'File name',
-    'file_size'               => 'File size',
-    'file_type'               => 'File type',
-    'attached_to'             => 'Attached to',
-    'file_exists'             => 'File exists',
+    'account_on_spectre'      => 'Rekening (Spectre)',
+    'account_on_ynab'         => 'Rekening (YNAB)',
+    'do_import'               => 'Ambil dari rekening ini',
+    'sepa_ct_id'              => 'SEPA End to End Identifier',
+    'sepa_ct_op'              => 'SEPA Opposing Account Identifier',
+    'sepa_db'                 => 'SEPA Mandate Identifier',
+    'sepa_country'            => 'SEPA Country',
+    'sepa_cc'                 => 'SEPA Clearing Code',
+    'sepa_ep'                 => 'SEPA External Purpose',
+    'sepa_ci'                 => 'SEPA Creditor Identifier',
+    'sepa_batch_id'           => 'SEPA Batch ID',
+    'external_id'             => 'ID Eksternal',
+    'account_at_bunq'         => 'Rekening dengan bunq',
+    'file_name'               => 'Nama file',
+    'file_size'               => 'Ukuran file',
+    'file_type'               => 'Jenis file',
+    'attached_to'             => 'Melekat pada',
+    'file_exists'             => 'File ada',
     'spectre_bank'            => 'Bank',
-    'spectre_last_use'        => 'Last login',
+    'spectre_last_use'        => 'Login terakhir',
     'spectre_status'          => 'Status',
     'bunq_payment_id'         => 'bunq payment ID',
-    'repetitions'             => 'Repetitions',
-    'title'                   => 'Title',
-    'transaction_s'           => 'Transaction(s)',
-    'field'                   => 'Field',
-    'value'                   => 'Value',
-    'interest'                => 'Interest',
-    'interest_period'         => 'interest period',
-    'liability_type'          => 'Type of liability',
+    'repetitions'             => 'Pengulangan',
+    'title'                   => 'Judul',
+    'transaction_s'           => 'Transaksi',
+    'field'                   => 'Bidang',
+    'value'                   => 'Nilai',
+    'interest'                => 'Bunga',
+    'interest_period'         => 'periode bunga',
+    'liability_type'          => 'Jenis kewajiban',
 ];

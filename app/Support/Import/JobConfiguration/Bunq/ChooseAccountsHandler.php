@@ -1,22 +1,22 @@
 <?php
 /**
  * ChooseAccountsHandler.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -32,6 +32,7 @@ use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use FireflyIII\Repositories\Currency\CurrencyRepositoryInterface;
 use FireflyIII\Repositories\ImportJob\ImportJobRepositoryInterface;
 use Illuminate\Support\MessageBag;
+use Log;
 
 /**
  * Class ChooseAccountsHandler
@@ -57,7 +58,7 @@ class ChooseAccountsHandler implements BunqJobConfigurationInterface
     {
         $config   = $this->repository->getConfiguration($this->importJob);
         $mapping  = $config['mapping'] ?? [];
-        $complete = \count($mapping) > 0;
+        $complete = count($mapping) > 0;
         if (true === $complete) {
             // move job to correct stage to download transactions
             $this->repository->setStage($this->importJob, 'go-for-import');
@@ -92,10 +93,11 @@ class ChooseAccountsHandler implements BunqJobConfigurationInterface
          * This is used to properly map transfers.
          */
         $ibanToAsset = [];
-        if (0 === \count($accounts)) {
+        Log::debug('Going to map IBANs for easy mapping later on.');
+        if (0 === count($accounts)) {
             throw new FireflyException('No bunq accounts found. Import cannot continue.'); // @codeCoverageIgnore
         }
-        if (0 === \count($mapping)) {
+        if (0 === count($mapping)) {
             $messages = new MessageBag;
             $messages->add('nomap', (string)trans('import.bunq_no_mapping'));
 
@@ -105,12 +107,19 @@ class ChooseAccountsHandler implements BunqJobConfigurationInterface
             $bunqId  = (int)$bunqId;
             $localId = (int)$localId;
 
+            Log::debug(sprintf('Now trying to link bunq acount #%d with Firefly III account %d', $bunqId, $localId));
+
             // validate each
             $bunqId    = $this->validBunqAccount($bunqId);
             $accountId = $this->validLocalAccount($localId);
-            $bunqIban  = $this->getBunqIban($bunqId);
+
+            Log::debug(sprintf('After validation: bunq account #%d with Firefly III account %d', $bunqId, $localId));
+
+            $bunqIban = $this->getBunqIban($bunqId);
+
+            Log::debug(sprintf('IBAN for bunq account #%d is "%s"', $bunqId, $bunqIban));
             if (null !== $bunqIban) {
-                $ibanToAsset[$bunqIban] = $accountId;
+                $ibanToAsset[$bunqIban] = $accountId; // @codeCoverageIgnore
             }
             $final[$bunqId] = $accountId;
         }
@@ -118,6 +127,9 @@ class ChooseAccountsHandler implements BunqJobConfigurationInterface
         $config['bunq-iban']   = $ibanToAsset;
         $config['apply-rules'] = $applyRules;
         $this->repository->setConfiguration($this->importJob, $config);
+
+        Log::info('Account mapping: ', $final);
+        Log::info('Bunq IBAN array: ', $ibanToAsset);
 
         return new MessageBag;
     }
@@ -132,7 +144,7 @@ class ChooseAccountsHandler implements BunqJobConfigurationInterface
     {
         $config   = $this->repository->getConfiguration($this->importJob);
         $accounts = $config['accounts'] ?? [];
-        if (0 === \count($accounts)) {
+        if (0 === count($accounts)) {
             throw new FireflyException('No bunq accounts found. Import cannot continue.'); // @codeCoverageIgnore
         }
         // list the users accounts:
@@ -142,6 +154,7 @@ class ChooseAccountsHandler implements BunqJobConfigurationInterface
         /** @var AccountModel $localAccount */
         foreach ($collection as $localAccount) {
             $accountId                 = $localAccount->id;
+            // TODO we can use getAccountCurrency() instead
             $currencyId                = (int)$this->accountRepository->getMetaValue($localAccount, 'currency_id');
             $currency                  = $this->getCurrency($currencyId);
             $localAccounts[$accountId] = [

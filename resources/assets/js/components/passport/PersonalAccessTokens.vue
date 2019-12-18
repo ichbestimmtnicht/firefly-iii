@@ -1,3 +1,23 @@
+<!--
+  - PersonalAccessTokens.vue
+  - Copyright (c) 2019 thegrumpydictator@gmail.com
+  -
+  - This file is part of Firefly III (https://github.com/firefly-iii).
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU Affero General Public License as
+  - published by the Free Software Foundation, either version 3 of the
+  - License, or (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU Affero General Public License for more details.
+  -
+  - You should have received a copy of the GNU Affero General Public License
+  - along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <style scoped>
     .action-link {
         cursor: pointer;
@@ -142,8 +162,7 @@
                             Here is your new personal access token. This is the only time it will be shown so don't lose it!
                             You may now use this token to make API requests.
                         </p>
-
-                        <pre><code>{{ accessToken }}</code></pre>
+                        <pre><textarea id="tokenHidden" style="width:100%;" rows="20" class="form-control">{{ accessToken }}</textarea></pre>
                     </div>
 
                     <!-- Modal Actions -->

@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Limite do Cartão de Crédito',
     'automatch'                   => 'Equivale automaticamente',
     'skip'                        => 'Pular',
+    'enabled'                     => 'Habilitado',
     'name'                        => 'Nome',
     'active'                      => 'Ativar',
     'amount_min'                  => 'Valor Mínimo',
@@ -37,38 +38,41 @@ return [
     'match'                       => 'Corresponde em',
     'strict'                      => 'Modo estrito',
     'repeat_freq'                 => 'Repetições',
+    'update_channel'              => 'Update channel',
     'journal_currency_id'         => 'Moeda',
     'currency_id'                 => 'Moeda',
     'transaction_currency_id'     => 'Moeda',
     'external_ip'                 => 'O IP externo do seu servidor',
     'attachments'                 => 'Anexos',
     'journal_amount'              => 'Quantia',
-    'journal_source_name'         => 'Revenue account (source)',
-    'journal_source_id'           => 'Asset account (source)',
+    'journal_source_name'         => 'Conta de receita (origem)',
+    'keep_bill_id'                => 'Fatura',
+    'journal_source_id'           => 'Conta de ativo (origem)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Verificação da segurança da senha',
     'source_account'              => 'Conta de origem',
     'destination_account'         => 'Conta de destino',
-    'journal_destination_id'      => 'Asset account (destination)',
-    'asset_destination_account'   => 'Destination account',
-    'include_net_worth'           => 'Include in net worth',
-    'asset_source_account'        => 'Source account',
+    'journal_destination_id'      => 'Conta de ativo (destino)',
+    'asset_destination_account'   => 'Conta de destino',
+    'include_net_worth'           => 'Incluir no patrimonio liquido',
+    'asset_source_account'        => 'Conta de origem',
     'journal_description'         => 'Descrição',
     'note'                        => 'Notas',
+    'store_new_transaction'       => 'Armazenar uma nova transação',
     'split_journal'               => 'Dividir essa transação',
     'split_journal_explanation'   => 'Dividir essa transação em várias partes',
     'currency'                    => 'Moeda',
     'account_id'                  => 'Conta de ativo',
     'budget_id'                   => 'Orçamento',
-    'openingBalance'              => 'Saldo inicial',
+    'opening_balance'             => 'Saldo inicial',
     'tagMode'                     => 'Modo de tag',
     'tag_position'                => 'Localização do indexador',
-    'virtualBalance'              => 'Saldo virtual',
+    'virtual_balance'             => 'Saldo virtual',
     'targetamount'                => 'Valor alvo',
-    'accountRole'                 => 'Tipo de conta',
-    'openingBalanceDate'          => 'Data do Saldo inicial',
-    'ccType'                      => 'Plano de pagamento do Cartão de Crédito',
-    'ccMonthlyPaymentDate'        => 'Data do pagamento mensal do Cartão de Crédito',
+    'account_role'                => 'Função de conta',
+    'opening_balance_date'        => 'Data do saldo inicial',
+    'cc_type'                     => 'Plano de pagamento do Cartão de Crédito',
+    'cc_monthly_payment_date'     => 'Data do pagamento mensal do Cartão de Crédito',
     'piggy_bank_id'               => 'Cofrinho',
     'returnHere'                  => 'Retornar aqui',
     'returnHereExplanation'       => 'Depois de armazenar, retorne aqui para criar outro.',
@@ -85,9 +89,9 @@ return [
     'verification'                => 'Verificação',
     'api_key'                     => 'Chave da API',
     'remember_me'                 => 'Lembrar-me',
-    'liability_type_id'           => 'Liability type',
-    'interest'                    => 'Interest',
-    'interest_period'             => 'Interest period',
+    'liability_type_id'           => 'Tipo de passivo',
+    'interest'                    => 'Juros',
+    'interest_period'             => 'Período de juros',
 
     'source_account_asset'        => 'Conta de origem (conta de ativo)',
     'destination_account_expense' => 'Conta de destino (conta de despesa)',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Símbolo',
     'code'                        => 'Código',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Número de conta',
+    'account_number'              => 'Número de conta',
     'creditCardNumber'            => 'Número do cartão de crédito',
     'has_headers'                 => 'Cabeçalhos',
     'date_format'                 => 'Formato da Data',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Parar processamento',
     'start_date'                  => 'Início do intervalo',
     'end_date'                    => 'Final do intervalo',
-    'export_start_range'          => 'Início do intervalo de exportação',
-    'export_end_range'            => 'Fim do intervalo de exportação',
-    'export_format'               => 'Formato do arquivo',
     'include_attachments'         => 'Incluir anexos enviados',
     'include_old_uploads'         => 'Incluir dados importados',
-    'accounts'                    => 'Exportar transações destas contas',
     'delete_account'              => 'Apagar conta ":name"',
     'delete_bill'                 => 'Apagar fatura ":name"',
     'delete_budget'               => 'Excluir o orçamento ":name"',
@@ -154,7 +154,7 @@ return [
     'delete_rule_group'           => 'Exclua o grupo de regras ":title"',
     'delete_link_type'            => 'Excluir tipo de link ":name"',
     'delete_user'                 => 'Excluir o usuário ":email"',
-    'delete_recurring'            => 'Delete recurring transaction ":title"',
+    'delete_recurring'            => 'Apagar transação recorrente ":title"',
     'user_areYouSure'             => 'Se você excluir o usuário ":email", tudo desaparecerá. Não será possível desfazer a ação. Se excluir você mesmo, você perderá acesso total a essa instância do Firefly III.',
     'attachment_areYouSure'       => 'Tem certeza que deseja excluir o anexo denominado ":name"?',
     'account_areYouSure'          => 'Tem certeza que deseja excluir a conta denominada ":name"?',
@@ -163,7 +163,7 @@ return [
     'ruleGroup_areYouSure'        => 'Tem certeza que deseja excluir o grupo de regras intitulado ":title"?',
     'budget_areYouSure'           => 'Tem certeza que deseja excluir o orçamento chamado ":name"?',
     'category_areYouSure'         => 'Tem certeza que deseja excluir a categoria com o nome ":name"?',
-    'recurring_areYouSure'        => 'Are you sure you want to delete the recurring transaction titled ":title"?',
+    'recurring_areYouSure'        => 'Tem certeza que deseja excluir o grupo de regras intitulado ":title"?',
     'currency_areYouSure'         => 'Tem certeza que deseja excluir a moeda chamada ":name"?',
     'piggyBank_areYouSure'        => 'Tem certeza que deseja excluir o cofrinho chamado ":name"?',
     'journal_areYouSure'          => 'Tem certeza que deseja excluir a transação descrita ":description"?',
@@ -179,11 +179,11 @@ return [
     'also_delete_connections'     => 'A única transação relacionada com este tipo de link vai perder a conexão. | Todas as transações de :count ligadas com este tipo de link vão perder sua conexão.',
     'also_delete_rules'           => 'A única regra que ligado a este grupo de regras será excluída também.|Todos as :count regras ligadas a este grupo de regras serão excluídas também.',
     'also_delete_piggyBanks'      => 'O único cofrinho conectado a essa conta será excluído também.|Todos os :count cofrinhos conectados a esta conta serão excluídos também.',
-    'bill_keep_transactions'      => 'The only transaction connected to this bill will not be deleted.|All :count transactions connected to this bill will be spared deletion.',
-    'budget_keep_transactions'    => 'The only transaction connected to this budget will not be deleted.|All :count transactions connected to this budget will be spared deletion.',
-    'category_keep_transactions'  => 'The only transaction connected to this category will not be deleted.|All :count transactions connected to this category will be spared deletion.',
-    'recurring_keep_transactions' => 'The only transaction created by this recurring transaction will not be deleted.|All :count transactions created by this recurring transaction will be spared deletion.',
-    'tag_keep_transactions'       => 'The only transaction connected to this tag will not be deleted.|All :count transactions connected to this tag will be spared deletion.',
+    'bill_keep_transactions'      => 'A única transação conectada a esta fatura não será excluída.|Todas as :count transações conectadas a esta fatura não serão excluídas.',
+    'budget_keep_transactions'    => 'A única transação conectada a este orçamento não será excluída.|Todas as :count transações conectadas a este orçamento não serão excluídas.',
+    'category_keep_transactions'  => 'A única transação conectada a esta categoria não será excluída.|Todas as :count transações conectadas a esta categoria não serão excluídas.',
+    'recurring_keep_transactions' => 'A única transação criada por esta transação recorrente não será excluída.|Todas as :count transações criadas por esta transação recorrente não serão excluídas.',
+    'tag_keep_transactions'       => 'A única transação conectada a esta tag não será excluída.|Todas as :count transações conectadas a esta tag não serão excluídas.',
     'check_for_updates'           => 'Buscar atualizações',
 
     'email'                 => 'E-mail',
@@ -191,12 +191,13 @@ return [
     'password_confirmation' => 'Senha(Confirmar)',
     'blocked'               => 'Está bloqueado?',
     'blocked_code'          => 'Razão para ser reportado',
+    'login_name'            => 'Login',
 
     // import
-    'apply_rules'           => 'Apply rules',
-    'artist'                => 'Artist',
-    'album'                 => 'Album',
-    'song'                  => 'Song',
+    'apply_rules'           => 'Aplicar Regras',
+    'artist'                => 'Artista',
+    'album'                 => 'Álbum',
+    'song'                  => 'Música',
 
 
     // admin
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Chave pública',
     'country_code'          => 'Código do país',
     'provider_code'         => 'Banco ou provedor de dados',
+    'fints_url'             => 'URL da API do FinTS',
+    'fints_port'            => 'Porta',
+    'fints_bank_code'       => 'Código do banco',
+    'fints_username'        => 'Usuário',
+    'fints_password'        => 'PIN / Senha',
+    'fints_account'         => 'Conta no FinTS',
+    'local_account'         => 'Conta no Firefly III',
+    'from_date'             => 'Data inicial',
+    'to_date'               => 'Data final',
+
 
     'due_date'                => 'Data de vencimento',
     'payment_date'            => 'Data de pagamento',
@@ -230,17 +241,22 @@ return [
     'inward'                  => 'Descrição interna',
     'outward'                 => 'Descrição externa',
     'rule_group_id'           => 'Grupo de regras',
-    'transaction_description' => 'Transaction description',
-    'first_date'              => 'First date',
-    'transaction_type'        => 'Transaction type',
-    'repeat_until'            => 'Repeat until',
-    'recurring_description'   => 'Recurring transaction description',
-    'repetition_type'         => 'Type of repetition',
-    'foreign_currency_id'     => 'Foreign currency',
-    'repetition_end'          => 'Repetition ends',
-    'repetitions'             => 'Repetitions',
-    'calendar'                => 'Calendar',
-    'weekend'                 => 'Weekend',
-    'client_secret'           => 'Client secret',
+    'transaction_description' => 'Descrição da transação',
+    'first_date'              => 'Primeira data',
+    'transaction_type'        => 'Tipo de transação',
+    'repeat_until'            => 'Repetir até',
+    'recurring_description'   => 'Descrição da transação recorrente',
+    'repetition_type'         => 'Tipo de repetição',
+    'foreign_currency_id'     => 'Moeda estrangeira',
+    'repetition_end'          => 'Repetição termina',
+    'repetitions'             => 'Repetições',
+    'calendar'                => 'Calendário',
+    'weekend'                 => 'Fim de Semana',
+    'client_secret'           => 'Chave secreta',
+
+    'withdrawal_destination_id' => 'Conta de destino',
+    'deposit_source_id'         => 'Conta de origem',
+    'expected_on'               => 'Esperado em',
+    'paid'                      => 'Pago',
 
 ];

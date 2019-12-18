@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Batas kartu kredit',
     'automatch'                   => 'Cocokkan secara otomatis',
     'skip'                        => 'Melewatkan',
+    'enabled'                     => 'Enabled',
     'name'                        => 'Nama',
     'active'                      => 'Aktif',
     'amount_min'                  => 'Jumlah minimal',
@@ -37,6 +38,7 @@ return [
     'match'                       => 'Cocok di',
     'strict'                      => 'Strict mode',
     'repeat_freq'                 => 'Berulang',
+    'update_channel'              => 'Update channel',
     'journal_currency_id'         => 'Mata uang',
     'currency_id'                 => 'Mata uang',
     'transaction_currency_id'     => 'Currency',
@@ -44,6 +46,7 @@ return [
     'attachments'                 => 'Lampiran',
     'journal_amount'              => 'Jumlah',
     'journal_source_name'         => 'Revenue account (source)',
+    'keep_bill_id'                => 'Bill',
     'journal_source_id'           => 'Asset account (source)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Verifikasi keamanan kata sandi',
@@ -55,20 +58,21 @@ return [
     'asset_source_account'        => 'Source account',
     'journal_description'         => 'Deskripsi',
     'note'                        => 'Catatan',
+    'store_new_transaction'       => 'Store new transaction',
     'split_journal'               => 'Pisahkan transaksi ini',
     'split_journal_explanation'   => 'Split transaksi ini di banyak bagian',
     'currency'                    => 'Mata uang',
     'account_id'                  => 'Akun aset',
     'budget_id'                   => 'Anggaran',
-    'openingBalance'              => 'Saldo awal',
+    'opening_balance'             => 'Opening balance',
     'tagMode'                     => 'Mode Tag',
     'tag_position'                => 'Lokasi tag',
-    'virtualBalance'              => 'Saldo virtual',
+    'virtual_balance'             => 'Virtual balance',
     'targetamount'                => 'Jumlah target',
-    'accountRole'                 => 'Peran akun',
-    'openingBalanceDate'          => 'Membuka tanggal saldo',
-    'ccType'                      => 'Rencana pembayaran kartu kredit',
-    'ccMonthlyPaymentDate'        => 'Credit card monthly payment date',
+    'account_role'                => 'Account role',
+    'opening_balance_date'        => 'Opening balance date',
+    'cc_type'                     => 'Credit card payment plan',
+    'cc_monthly_payment_date'     => 'Credit card monthly payment date',
     'piggy_bank_id'               => 'Celengan',
     'returnHere'                  => 'Kembali ke sini',
     'returnHereExplanation'       => 'Setelah menyimpan, kembali ke sini untuk membuat yang lain.',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Simbol',
     'code'                        => 'Kode',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Nomor akun',
+    'account_number'              => 'Account number',
     'creditCardNumber'            => 'Nomor kartu kredit',
     'has_headers'                 => 'Judul',
     'date_format'                 => 'Format tanggal',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Berhenti memproses',
     'start_date'                  => 'Mulai dari jangkauan',
     'end_date'                    => 'Akhir rentang',
-    'export_start_range'          => 'Mulai dari rentang ekspor',
-    'export_end_range'            => 'Akhir rentang ekspor',
-    'export_format'               => 'Format file',
     'include_attachments'         => 'Sertakan lampiran yang diunggah',
     'include_old_uploads'         => 'Sertakan data yang diimpor',
-    'accounts'                    => 'Mengekspor transaksi dari akun ini',
     'delete_account'              => 'Delete account ":name"',
     'delete_bill'                 => 'Hapus tagihan ":name"',
     'delete_budget'               => 'Hapus anggaran ":name"',
@@ -191,6 +191,7 @@ return [
     'password_confirmation' => 'Password (lagi)',
     'blocked'               => 'Apakah diblokir?',
     'blocked_code'          => 'Alasan untuk blok',
+    'login_name'            => 'Login',
 
     // import
     'apply_rules'           => 'Apply rules',
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Kunci publik',
     'country_code'          => 'Kode negara',
     'provider_code'         => 'Bank atau penyedia data',
+    'fints_url'             => 'FinTS API URL',
+    'fints_port'            => 'Port',
+    'fints_bank_code'       => 'Bank code',
+    'fints_username'        => 'Username',
+    'fints_password'        => 'PIN / Password',
+    'fints_account'         => 'FinTS account',
+    'local_account'         => 'Firefly III account',
+    'from_date'             => 'Date from',
+    'to_date'               => 'Date to',
+
 
     'due_date'                => 'Batas tanggal terakhir',
     'payment_date'            => 'Tanggal pembayaran',
@@ -242,5 +253,10 @@ return [
     'calendar'                => 'Calendar',
     'weekend'                 => 'Weekend',
     'client_secret'           => 'Client secret',
+
+    'withdrawal_destination_id' => 'Destination account',
+    'deposit_source_id'         => 'Source account',
+    'expected_on'               => 'Expected on',
+    'paid'                      => 'Paid',
 
 ];

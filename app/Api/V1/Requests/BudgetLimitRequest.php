@@ -1,31 +1,33 @@
 <?php
 /**
  * BudgetLimitRequest.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
 
 namespace FireflyIII\Api\V1\Requests;
 
-
 /**
  * Class BudgetLimitRequest
+ *
+ * @codeCoverageIgnore
+ * TODO AFTER 4.8,0: split this into two request classes.
  */
 class BudgetLimitRequest extends Request
 {
@@ -48,10 +50,12 @@ class BudgetLimitRequest extends Request
     public function getAll(): array
     {
         return [
-            'budget_id'  => $this->integer('budget_id'),
-            'start_date' => $this->date('start_date'),
-            'end_date'   => $this->date('end_date'),
-            'amount'     => $this->string('amount'),
+            'budget_id'     => $this->integer('budget_id'),
+            'start'         => $this->date('start'),
+            'end'           => $this->date('end'),
+            'amount'        => $this->string('amount'),
+            'currency_id'   => $this->integer('currency_id'),
+            'currency_code' => $this->string('currency_code'),
         ];
     }
 
@@ -63,10 +67,12 @@ class BudgetLimitRequest extends Request
     public function rules(): array
     {
         $rules = [
-            'budget_id'  => 'required|exists:budgets,id|belongsToUser:budgets,id',
-            'start_date' => 'required|before:end_date|date',
-            'end_date'   => 'required|after:start_date|date',
-            'amount'     => 'required|more:0',
+            'budget_id'     => 'required|exists:budgets,id|belongsToUser:budgets,id',
+            'start'         => 'required|before:end|date',
+            'end'           => 'required|after:start|date',
+            'amount'        => 'required|more:0',
+            'currency_id'   => 'numeric|exists:transaction_currencies,id',
+            'currency_code' => 'min:3|max:3|exists:transaction_currencies,code',
         ];
         switch ($this->method()) {
             default:
@@ -76,6 +82,12 @@ class BudgetLimitRequest extends Request
                 $rules['budget_id'] = 'required|exists:budgets,id|belongsToUser:budgets,id';
                 break;
         }
+        // if request has a budget already, drop the rule.
+        $budget = $this->route()->parameter('budget');
+        if (null !== $budget) {
+            unset($rules['budget_id']);
+        }
+
 
         return $rules;
     }

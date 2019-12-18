@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Limit karty kredytowej',
     'automatch'                   => 'Dopasuj automatycznie',
     'skip'                        => 'Pomiń',
+    'enabled'                     => 'Aktywna',
     'name'                        => 'Nazwa',
     'active'                      => 'Aktywny',
     'amount_min'                  => 'Minimalna kwota',
@@ -37,6 +38,7 @@ return [
     'match'                       => 'Dopasowanie',
     'strict'                      => 'Tryb ścisły',
     'repeat_freq'                 => 'Powtarza się',
+    'update_channel'              => 'Kanał aktualizacji',
     'journal_currency_id'         => 'Waluta',
     'currency_id'                 => 'Waluta',
     'transaction_currency_id'     => 'Waluta',
@@ -44,31 +46,33 @@ return [
     'attachments'                 => 'Załączniki',
     'journal_amount'              => 'Kwota',
     'journal_source_name'         => 'Konto przychodów (źródło)',
+    'keep_bill_id'                => 'Rachunek',
     'journal_source_id'           => 'Konto aktywów (źródło)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Sprawdź bezpieczeństwo hasła',
     'source_account'              => 'Konto źródłowe',
     'destination_account'         => 'Konto docelowe',
     'journal_destination_id'      => 'Konto aktywów (przeznaczenie)',
-    'asset_destination_account'   => 'Destination account',
-    'include_net_worth'           => 'Include in net worth',
-    'asset_source_account'        => 'Source account',
+    'asset_destination_account'   => 'Konto docelowe',
+    'include_net_worth'           => 'Uwzględnij w wartości netto',
+    'asset_source_account'        => 'Konto źródłowe',
     'journal_description'         => 'Opis',
     'note'                        => 'Notatki',
+    'store_new_transaction'       => 'Zapisz nową transakcję',
     'split_journal'               => 'Podziel tę transakcję',
     'split_journal_explanation'   => 'Podziel transakcję na wiele części',
     'currency'                    => 'Waluta',
     'account_id'                  => 'Konto aktywów',
     'budget_id'                   => 'Budżet',
-    'openingBalance'              => 'Bilans otwarcia',
+    'opening_balance'             => 'Saldo początkowe',
     'tagMode'                     => 'Tryb tagów',
     'tag_position'                => 'Lokalizacja taga',
-    'virtualBalance'              => 'Wirtualne saldo',
+    'virtual_balance'             => 'Wirtualne saldo',
     'targetamount'                => 'Kwota docelowa',
-    'accountRole'                 => 'Rola konta',
-    'openingBalanceDate'          => 'Data salda otwarcia',
-    'ccType'                      => 'Plan płatności kartą kredytową',
-    'ccMonthlyPaymentDate'        => 'Miesięczny termin spłaty karty kredytowej',
+    'account_role'                => 'Rola konta',
+    'opening_balance_date'        => 'Data salda otwarcia',
+    'cc_type'                     => 'Plan płatności kartą kredytową',
+    'cc_monthly_payment_date'     => 'Miesięczny termin spłaty karty kredytowej',
     'piggy_bank_id'               => 'Skarbonka',
     'returnHere'                  => 'Wróć tutaj',
     'returnHereExplanation'       => 'Po zapisaniu, wrócić tutaj.',
@@ -85,9 +89,9 @@ return [
     'verification'                => 'Weryfikacja',
     'api_key'                     => 'Klucz API',
     'remember_me'                 => 'Zapamiętaj mnie',
-    'liability_type_id'           => 'Liability type',
-    'interest'                    => 'Interest',
-    'interest_period'             => 'Interest period',
+    'liability_type_id'           => 'Rodzaj zobowiązania',
+    'interest'                    => 'Odsetki',
+    'interest_period'             => 'Okres odsetkowy',
 
     'source_account_asset'        => 'Konto źródłowe (konto aktywów)',
     'destination_account_expense' => 'Konto docelowe (konto wydatków)',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Symbol',
     'code'                        => 'Kod',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Numer konta',
+    'account_number'              => 'Numer konta',
     'creditCardNumber'            => 'Numer karty kredytowej',
     'has_headers'                 => 'Nagłówki',
     'date_format'                 => 'Format daty',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Zatrzymaj przetwarzanie',
     'start_date'                  => 'Początek zakresu',
     'end_date'                    => 'Koniec zakresu',
-    'export_start_range'          => 'Początek okresu eksportu',
-    'export_end_range'            => 'Koniec okresu eksportu',
-    'export_format'               => 'Format pliku',
     'include_attachments'         => 'Uwzględnij dołączone załączniki',
     'include_old_uploads'         => 'Dołącz zaimportowane dane',
-    'accounts'                    => 'Eksportuj transakcje z tych kont',
     'delete_account'              => 'Usuń konto ":name"',
     'delete_bill'                 => 'Usuń rachunek ":name"',
     'delete_budget'               => 'Usuń budżet ":name"',
@@ -163,7 +163,7 @@ return [
     'ruleGroup_areYouSure'        => 'Czy na pewno chcesz usunąć grupę reguł o nazwie ":name"?',
     'budget_areYouSure'           => 'Czy na pewno chcesz usunąć budżet o nazwie ":name"?',
     'category_areYouSure'         => 'Czy na pewno chcesz usunąć kategorię o nazwie ":name"?',
-    'recurring_areYouSure'        => 'Are you sure you want to delete the recurring transaction titled ":title"?',
+    'recurring_areYouSure'        => 'Czy na pewno chcesz usunąć cykliczną transakcję o nazwie ":title"?',
     'currency_areYouSure'         => 'Czy na pewno chcesz usunąć walutę o nazwie ":name"?',
     'piggyBank_areYouSure'        => 'Czy na pewno chcesz usunąć skarbonkę o nazwie ":name"?',
     'journal_areYouSure'          => 'Czy na pewno chcesz usunąć transakcję opisaną ":description"?',
@@ -179,11 +179,11 @@ return [
     'also_delete_connections'     => 'Jedyna transakcja połączona z tym typem łącza utraci to połączenie.|Wszystkie transakcje (:count) połączone tym typem łącza utracą swoje połączenie.',
     'also_delete_rules'           => 'Jedyna reguła połączona z tą grupą reguł zostanie również usunięta.|Wszystkie reguły (:count) połączone tą grupą reguł zostaną również usunięte.',
     'also_delete_piggyBanks'      => 'Jedyna skarbonka połączona z tym kontem zostanie również usunięta.|Wszystkie skarbonki (:count) połączone z tym kontem zostaną również usunięte.',
-    'bill_keep_transactions'      => 'The only transaction connected to this bill will not be deleted.|All :count transactions connected to this bill will be spared deletion.',
-    'budget_keep_transactions'    => 'The only transaction connected to this budget will not be deleted.|All :count transactions connected to this budget will be spared deletion.',
-    'category_keep_transactions'  => 'The only transaction connected to this category will not be deleted.|All :count transactions connected to this category will be spared deletion.',
-    'recurring_keep_transactions' => 'The only transaction created by this recurring transaction will not be deleted.|All :count transactions created by this recurring transaction will be spared deletion.',
-    'tag_keep_transactions'       => 'The only transaction connected to this tag will not be deleted.|All :count transactions connected to this tag will be spared deletion.',
+    'bill_keep_transactions'      => 'Jedyna transakcja związana z tym rachunkiem nie zostanie usunięta.|Wszystkie transakcje (:count) związane z tym rachunkiem zostaną oszczędzone.',
+    'budget_keep_transactions'    => 'Jedyna transakcja związana z tym budżetem nie zostanie usunięta.|Wszystkie transakcje (:count) związane z tym budżetem zostaną oszczędzone.',
+    'category_keep_transactions'  => 'Jedyna transakcja związana z tą kategorią nie zostanie usunięta.|Wszystkie transakcje (:count) związane z tą kategorią zostaną oszczędzone.',
+    'recurring_keep_transactions' => 'Jedyna transakcja utworzona przez tę cykliczną transakcję nie zostanie usunięta.|Wszystkie transakcje (:count) utworzone przez tę cykliczną transakcję zostaną oszczędzone.',
+    'tag_keep_transactions'       => 'Jedyna transakcja związana z tym tagiem nie zostanie usunięta.|Wszystkie transakcje (:count) związane z tym tagiem nie zostaną skasowane.',
     'check_for_updates'           => 'Sprawdź aktualizacje',
 
     'email'                 => 'Adres email',
@@ -191,6 +191,7 @@ return [
     'password_confirmation' => 'Hasło (ponownie)',
     'blocked'               => 'Jest zablokowany?',
     'blocked_code'          => 'Powód blokady',
+    'login_name'            => 'Login',
 
     // import
     'apply_rules'           => 'Zastosuj reguły',
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Klucz publiczny',
     'country_code'          => 'Kod kraju',
     'provider_code'         => 'Dostawca banku lub danych',
+    'fints_url'             => 'Adres FinTS',
+    'fints_port'            => 'Port',
+    'fints_bank_code'       => 'Kod banku',
+    'fints_username'        => 'Nazwa użytkownika',
+    'fints_password'        => 'PIN / hasło',
+    'fints_account'         => 'Konto FinTS',
+    'local_account'         => 'Konto Firefly III',
+    'from_date'             => 'Data od',
+    'to_date'               => 'Data do',
+
 
     'due_date'                => 'Termin realizacji',
     'payment_date'            => 'Data płatności',
@@ -235,12 +246,17 @@ return [
     'transaction_type'        => 'Typ transakcji',
     'repeat_until'            => 'Powtarzaj aż',
     'recurring_description'   => 'Opis cyklicznej transakcji',
-    'repetition_type'         => 'Typ powtórzeń',
+    'repetition_type'         => 'Tryb powtarzania',
     'foreign_currency_id'     => 'Zagraniczna waluta',
-    'repetition_end'          => 'Koniec powtórzeń',
+    'repetition_end'          => 'Koniec powtarzania',
     'repetitions'             => 'Powtórzenia',
     'calendar'                => 'Kalendarz',
     'weekend'                 => 'Weekend',
-    'client_secret'           => 'Client secret',
+    'client_secret'           => 'Sekret klienta',
+
+    'withdrawal_destination_id' => 'Konto docelowe',
+    'deposit_source_id'         => 'Konto źródłowe',
+    'expected_on'               => 'Oczekiwany',
+    'paid'                      => 'Zapłacone',
 
 ];

@@ -1,22 +1,22 @@
 <?php
 /**
  * AvailableBudgetTransformer.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -25,69 +25,37 @@ namespace FireflyIII\Transformers;
 
 
 use FireflyIII\Models\AvailableBudget;
-use League\Fractal\Resource\Item;
-use League\Fractal\TransformerAbstract;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use FireflyIII\Repositories\Budget\BudgetRepositoryInterface;
+use FireflyIII\Repositories\Budget\NoBudgetRepositoryInterface;
+use FireflyIII\Repositories\Budget\OperationsRepositoryInterface;
+use Illuminate\Support\Collection;
+use Log;
 
 /**
  * Class AvailableBudgetTransformer
  */
-class AvailableBudgetTransformer extends TransformerAbstract
+class AvailableBudgetTransformer extends AbstractTransformer
 {
-    /**
-     * List of resources possible to include
-     *
-     * @var array
-     */
-    protected $availableIncludes = ['transaction_currency', 'user'];
-    /**
-     * List of resources to automatically include
-     *
-     * @var array
-     */
-    protected $defaultIncludes = ['transaction_currency'];
-
-    /** @var ParameterBag */
-    protected $parameters;
+    /** @var NoBudgetRepositoryInterface */
+    private $noBudgetRepository;
+    /** @var OperationsRepositoryInterface */
+    private $opsRepository;
+    /** @var BudgetRepositoryInterface */
+    private $repository;
 
     /**
      * CurrencyTransformer constructor.
      *
      * @codeCoverageIgnore
-     *
-     * @param ParameterBag $parameters
      */
-    public function __construct(ParameterBag $parameters)
+    public function __construct()
     {
-        $this->parameters = $parameters;
-    }
-
-    /**
-     * Attach the currency.
-     *
-     * @codeCoverageIgnore
-     *
-     * @param AvailableBudget $availableBudget
-     *
-     * @return Item
-     */
-    public function includeTransactionCurrency(AvailableBudget $availableBudget): Item
-    {
-        return $this->item($availableBudget->transactionCurrency, new CurrencyTransformer($this->parameters), 'transaction_currencies');
-    }
-
-    /**
-     * Attach the user.
-     *
-     * @codeCoverageIgnore
-     *
-     * @param AvailableBudget $availableBudget
-     *
-     * @return Item
-     */
-    public function includeUser(AvailableBudget $availableBudget): Item
-    {
-        return $this->item($availableBudget->user, new UserTransformer($this->parameters), 'users');
+        $this->repository         = app(BudgetRepositoryInterface::class);
+        $this->opsRepository      = app(OperationsRepositoryInterface::class);
+        $this->noBudgetRepository = app(NoBudgetRepositoryInterface::class);
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
+        }
     }
 
     /**
@@ -99,22 +67,58 @@ class AvailableBudgetTransformer extends TransformerAbstract
      */
     public function transform(AvailableBudget $availableBudget): array
     {
-        $data = [
-            'id'         => (int)$availableBudget->id,
-            'updated_at' => $availableBudget->updated_at->toAtomString(),
-            'created_at' => $availableBudget->created_at->toAtomString(),
-            'start_date' => $availableBudget->start_date->format('Y-m-d'),
-            'end_date'   => $availableBudget->end_date->format('Y-m-d'),
-            'amount'     => round($availableBudget->amount, $availableBudget->transactionCurrency->decimal_places),
-            'links'      => [
+        $this->repository->setUser($availableBudget->user);
+
+        $currency = $availableBudget->transactionCurrency;
+        $data     = [
+            'id'                      => (int)$availableBudget->id,
+            'created_at'              => $availableBudget->created_at->toAtomString(),
+            'updated_at'              => $availableBudget->updated_at->toAtomString(),
+            'currency_id'             => $currency->id,
+            'currency_code'           => $currency->code,
+            'currency_symbol'         => $currency->symbol,
+            'currency_decimal_places' => $currency->decimal_places,
+            'amount'                  => round($availableBudget->amount, $currency->decimal_places),
+            'start'                   => $availableBudget->start_date->format('Y-m-d'),
+            'end'                     => $availableBudget->end_date->format('Y-m-d'),
+            'spent_in_budgets'        => [],
+            'spent_no_budget'         => [],
+            'links'                   => [
                 [
                     'rel' => 'self',
                     'uri' => '/available_budgets/' . $availableBudget->id,
                 ],
             ],
         ];
+        $start    = $this->parameters->get('start');
+        $end      = $this->parameters->get('end');
+        if (null !== $start && null !== $end) {
+            $data['spent_in_budgets'] = $this->getSpentInBudgets();
+            $data['spent_no_budget']  = $this->spentOutsideBudgets();
+        }
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    private function getSpentInBudgets(): array
+    {
+        $allActive = $this->repository->getActiveBudgets();
+
+        return $this->opsRepository->spentInPeriodMc(
+            $allActive, new Collection, $this->parameters->get('start'), $this->parameters->get('end')
+        );
+
+    }
+
+    /**
+     * @return array
+     */
+    private function spentOutsideBudgets(): array
+    {
+        return $this->noBudgetRepository->spentInPeriodWoBudgetMc(new Collection, $this->parameters->get('start'), $this->parameters->get('end'));
     }
 
 }

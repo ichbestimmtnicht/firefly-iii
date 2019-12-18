@@ -1,22 +1,22 @@
 <?php
 /**
  * ImportJobRepositoryInterface.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -56,6 +56,20 @@ interface ImportJobRepositoryInterface
     public function appendTransactions(ImportJob $job, array $transactions): ImportJob;
 
     /**
+     * @param ImportJob $job
+     *
+     * @return int
+     */
+    public function countTransactions(ImportJob $job): int;
+
+    /**
+     * @param ImportJob $job
+     *
+     * @return int
+     */
+    public function countByTag(ImportJob $job): int;
+
+    /**
      * @param string $importProvider
      *
      * @return ImportJob
@@ -63,11 +77,25 @@ interface ImportJobRepositoryInterface
     public function create(string $importProvider): ImportJob;
 
     /**
+     * @param int $jobId
+     *
+     * @return ImportJob|null
+     */
+    public function find(int $jobId): ?ImportJob;
+
+    /**
      * @param string $key
      *
      * @return ImportJob|null
      */
     public function findByKey(string $key): ?ImportJob;
+
+    /**
+     * Return all import jobs.
+     *
+     * @return Collection
+     */
+    public function get(): Collection;
 
     /**
      * Return all attachments for job.
@@ -95,6 +123,15 @@ interface ImportJobRepositoryInterface
      * @return array
      */
     public function getExtendedStatus(ImportJob $job): array;
+
+    /**
+     * Return transactions from attachment.
+     *
+     * @param ImportJob $job
+     *
+     * @return array
+     */
+    public function getTransactions(ImportJob $job): array;
 
     /**
      * @param ImportJob $job

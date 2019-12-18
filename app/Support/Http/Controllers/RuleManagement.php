@@ -1,22 +1,22 @@
 <?php
 /**
  * RuleManagement.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -51,29 +51,30 @@ trait RuleManagement
                 'description'     => (string)trans('firefly.default_rule_description'),
                 'trigger'         => 'store-journal',
                 'strict'          => true,
-                'rule_triggers'   => [
+                'active'          => true,
+                'triggers'        => [
                     [
-                        'name'            => 'description_is',
+                        'type'            => 'description_is',
                         'value'           => (string)trans('firefly.default_rule_trigger_description'),
                         'stop_processing' => false,
 
                     ],
                     [
-                        'name'            => 'from_account_is',
+                        'type'            => 'from_account_is',
                         'value'           => (string)trans('firefly.default_rule_trigger_from_account'),
                         'stop_processing' => false,
 
                     ],
 
                 ],
-                'rule_actions'    => [
+                'actions'         => [
                     [
-                        'name'            => 'prepend_description',
+                        'type'            => 'prepend_description',
                         'value'           => (string)trans('firefly.default_rule_action_prepend'),
                         'stop_processing' => false,
                     ],
                     [
-                        'name'            => 'set_category',
+                        'type'            => 'set_category',
                         'value'           => (string)trans('firefly.default_rule_action_set_category'),
                         'stop_processing' => false,
                     ],
@@ -88,20 +89,20 @@ trait RuleManagement
      * @param Request $request
      *
      * @return array
-     *
+     * @codeCoverageIgnore
      */
     protected function getPreviousActions(Request $request): array
     {
         $index    = 0;
         $triggers = [];
-        $oldInput = $request->old('rule_actions');
-        if (\is_array($oldInput)) {
+        $oldInput = $request->old('actions');
+        if (is_array($oldInput)) {
             foreach ($oldInput as $oldAction) {
                 try {
                     $triggers[] = view(
                         'rules.partials.action',
                         [
-                            'oldAction'  => $oldAction['name'],
+                            'oldAction'  => $oldAction['type'],
                             'oldValue'   => $oldAction['value'],
                             'oldChecked' => 1 === (int)($oldAction['stop_processing'] ?? '0'),
                             'count'      => $index + 1,
@@ -122,19 +123,20 @@ trait RuleManagement
      * @param Request $request
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected function getPreviousTriggers(Request $request): array
     {
         $index    = 0;
         $triggers = [];
-        $oldInput = $request->old('rule_triggers');
-        if (\is_array($oldInput)) {
+        $oldInput = $request->old('triggers');
+        if (is_array($oldInput)) {
             foreach ($oldInput as $oldTrigger) {
                 try {
                     $triggers[] = view(
                         'rules.partials.trigger',
                         [
-                            'oldTrigger' => $oldTrigger['name'],
+                            'oldTrigger' => $oldTrigger['type'],
                             'oldValue'   => $oldTrigger['value'],
                             'oldChecked' => 1 === (int)($oldTrigger['stop_processing'] ?? '0'),
                             'count'      => $index + 1,
@@ -162,6 +164,7 @@ trait RuleManagement
             $data = [
                 'title'       => (string)trans('firefly.default_rule_group_name'),
                 'description' => (string)trans('firefly.default_rule_group_description'),
+                'active'      => true,
             ];
 
             $repository->store($data);

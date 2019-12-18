@@ -1,22 +1,22 @@
 <?php
 /**
  * ChartJsGenerator.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -24,6 +24,7 @@ namespace FireflyIII\Generator\Chart\Basic;
 
 use FireflyIII\Support\ChartColour;
 use Log;
+
 /**
  * Class ChartJsGenerator.
  */
@@ -31,12 +32,53 @@ class ChartJsGenerator implements GeneratorInterface
 {
     /**
      * Constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
-        if ('testing' === env('APP_ENV')) {
-            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', \get_class($this)));
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
         }
+    }
+
+    /**
+     * Expects data as:.
+     *
+     * key => [value => x, 'currency_symbol' => 'x']
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    public function multiCurrencyPieChart(array $data): array
+    {
+        $chartData = [
+            'datasets' => [
+                0 => [],
+            ],
+            'labels'   => [],
+        ];
+
+        $amounts  = array_column($data, 'amount');
+        $next     = next($amounts);
+        $sortFlag = SORT_ASC;
+        if (!is_bool($next) && 1 === bccomp((string)$next, '0')) {
+            $sortFlag = SORT_DESC;
+        }
+        array_multisort($amounts, $sortFlag, $data);
+        unset($next, $sortFlag, $amounts);
+
+        $index = 0;
+        foreach ($data as $key => $valueArray) {
+            // make larger than 0
+            $chartData['datasets'][0]['data'][]            = (float)app('steam')->positive((string)$valueArray['amount']);
+            $chartData['datasets'][0]['backgroundColor'][] = ChartColour::getColour($index);
+            $chartData['datasets'][0]['currency_symbol'][] = $valueArray['currency_symbol'];
+            $chartData['labels'][]                         = $key;
+            ++$index;
+        }
+
+        return $chartData;
     }
 
     /**
@@ -67,7 +109,7 @@ class ChartJsGenerator implements GeneratorInterface
      *        ]
      *    ]
      *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity) // it's five.
+     *  // it's five.
      *
      * @param array $data
      *
@@ -77,10 +119,10 @@ class ChartJsGenerator implements GeneratorInterface
     {
         reset($data);
         $first  = current($data);
-        $labels = \is_array($first['entries']) ? array_keys($first['entries']) : [];
+        $labels = is_array($first['entries']) ? array_keys($first['entries']) : [];
 
         $chartData = [
-            'count'    => \count($data),
+            'count'    => count($data),
             'labels'   => $labels, // take ALL labels from the first set.
             'datasets' => [],
         ];
@@ -132,7 +174,7 @@ class ChartJsGenerator implements GeneratorInterface
         // different sort when values are positive and when they're negative.
         asort($data);
         $next = next($data);
-        if (!\is_bool($next) && 1 === bccomp((string)$next, '0')) {
+        if (!is_bool($next) && 1 === bccomp((string)$next, '0')) {
             // next is positive, sort other way around.
             arsort($data);
         }
@@ -143,46 +185,7 @@ class ChartJsGenerator implements GeneratorInterface
             // make larger than 0
             $chartData['datasets'][0]['data'][]            = (float)app('steam')->positive((string)$value);
             $chartData['datasets'][0]['backgroundColor'][] = ChartColour::getColour($index);
-            $chartData['labels'][]                         = $key;
-            ++$index;
-        }
 
-        return $chartData;
-    }
-
-    /**
-     * Expects data as:.
-     *
-     * key => [value => x, 'currency_symbol' => 'x']
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    public function multiCurrencyPieChart(array $data): array
-    {
-        $chartData = [
-            'datasets' => [
-                0 => [],
-            ],
-            'labels'   => [],
-        ];
-
-        $amounts = array_column($data, 'amount');
-        $next = next($amounts);
-        $sortFlag = SORT_ASC;
-        if (!\is_bool($next) && 1 === bccomp((string)$next, '0')) {
-            $sortFlag = SORT_DESC;
-        }
-        array_multisort($amounts, $sortFlag, $data);
-        unset($next, $sortFlag, $amounts);
-
-        $index = 0;
-        foreach ($data as $key => $valueArray) {
-            // make larger than 0
-            $chartData['datasets'][0]['data'][]            = (float)app('steam')->positive((string)$valueArray['amount']);
-            $chartData['datasets'][0]['backgroundColor'][] = ChartColour::getColour($index);
-            $chartData['datasets'][0]['currency_symbol'][] = $valueArray['currency_symbol'];
             $chartData['labels'][]                         = $key;
             ++$index;
         }
@@ -193,7 +196,6 @@ class ChartJsGenerator implements GeneratorInterface
     /**
      * Will generate a (ChartJS) compatible array from the given input. Expects this format:.
      *
-     * 'label-of-entry' => value
      * 'label-of-entry' => value
      *
      * @param string $setLabel

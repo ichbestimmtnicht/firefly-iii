@@ -1,22 +1,22 @@
 <?php
 /**
  * CategoryTransformer.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -24,85 +24,30 @@ declare(strict_types=1);
 namespace FireflyIII\Transformers;
 
 
-use FireflyIII\Helpers\Collector\TransactionCollectorInterface;
 use FireflyIII\Models\Category;
+use FireflyIII\Repositories\Category\OperationsRepositoryInterface;
 use Illuminate\Support\Collection;
-use League\Fractal\Resource\Collection as FractalCollection;
-use League\Fractal\Resource\Item;
-use League\Fractal\TransformerAbstract;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Log;
 
 /**
  * Class CategoryTransformer
  */
-class CategoryTransformer extends TransformerAbstract
+class CategoryTransformer extends AbstractTransformer
 {
-    /**
-     * List of resources possible to include
-     *
-     * @var array
-     */
-    protected $availableIncludes = ['user', 'transactions'];
-    /**
-     * List of resources to automatically include
-     *
-     * @var array
-     */
-    protected $defaultIncludes = ['user'];
-
-    /** @var ParameterBag */
-    protected $parameters;
+    /** @var OperationsRepositoryInterface */
+    private $opsRepository;
 
     /**
      * CategoryTransformer constructor.
      *
      * @codeCoverageIgnore
-     *
-     * @param ParameterBag $parameters
      */
-    public function __construct(ParameterBag $parameters)
+    public function __construct()
     {
-        $this->parameters = $parameters;
-    }
-
-    /**
-     * Include any transactions.
-     *
-     * @param Category $category
-     *
-     * @codeCoverageIgnore
-     * @return FractalCollection
-     */
-    public function includeTransactions(Category $category): FractalCollection
-    {
-        $pageSize = (int)app('preferences')->getForUser($category->user, 'listPageSize', 50)->data;
-
-        // journals always use collector and limited using URL parameters.
-        $collector = app(TransactionCollectorInterface::class);
-        $collector->setUser($category->user);
-        $collector->withOpposingAccount()->withCategoryInformation()->withCategoryInformation();
-        $collector->setAllAssetAccounts();
-        $collector->setCategories(new Collection([$category]));
-        if (null !== $this->parameters->get('start') && null !== $this->parameters->get('end')) {
-            $collector->setRange($this->parameters->get('start'), $this->parameters->get('end'));
+        $this->opsRepository = app(OperationsRepositoryInterface::class);
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
         }
-        $collector->setLimit($pageSize)->setPage($this->parameters->get('page'));
-        $transactions = $collector->getTransactions();
-
-        return $this->collection($transactions, new TransactionTransformer($this->parameters), 'transactions');
-    }
-
-    /**
-     * Include the user.
-     *
-     * @param Category $category
-     *
-     * @codeCoverageIgnore
-     * @return Item
-     */
-    public function includeUser(Category $category): Item
-    {
-        return $this->item($category->user, new UserTransformer($this->parameters), 'users');
     }
 
     /**
@@ -114,11 +59,23 @@ class CategoryTransformer extends TransformerAbstract
      */
     public function transform(Category $category): array
     {
+        $this->opsRepository->setUser($category->user);
+
+        $spent  = [];
+        $earned = [];
+        $start  = $this->parameters->get('start');
+        $end    = $this->parameters->get('end');
+        if (null !== $start && null !== $end) {
+            $earned = $this->beautify($this->opsRepository->sumIncome($start, $end, null, new Collection([$category])));
+            $spent  = $this->beautify($this->opsRepository->sumExpenses($start, $end, null, new Collection([$category])));
+        }
         $data = [
             'id'         => (int)$category->id,
-            'updated_at' => $category->updated_at->toAtomString(),
             'created_at' => $category->created_at->toAtomString(),
+            'updated_at' => $category->updated_at->toAtomString(),
             'name'       => $category->name,
+            'spent'      => $spent,
+            'earned'     => $earned,
             'links'      => [
                 [
                     'rel' => 'self',
@@ -130,4 +87,19 @@ class CategoryTransformer extends TransformerAbstract
         return $data;
     }
 
+    /**
+     * @param array $array
+     *
+     * @return array
+     */
+    private function beautify(array $array): array
+    {
+        $return = [];
+        foreach ($array as $data) {
+            $data['sum'] = round($data['sum'], (int)$data['currency_decimal_places']);
+            $return[]    = $data;
+        }
+
+        return $return;
+    }
 }

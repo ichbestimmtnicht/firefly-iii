@@ -1,22 +1,22 @@
 <?php
 /**
  * TagRepositoryInterface.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -32,6 +32,11 @@ use Illuminate\Support\Collection;
  */
 interface TagRepositoryInterface
 {
+    /**
+     * Destroy all tags.
+     */
+    public function destroyAll(): void;
+
     /**
      * @return int
      */
@@ -56,11 +61,28 @@ interface TagRepositoryInterface
     public function earnedInPeriod(Tag $tag, Carbon $start, Carbon $end): string;
 
     /**
+     * @param Tag    $tag
+     * @param Carbon $start
+     * @param Carbon $end
+     *
+     * @return array
+     */
+    public function expenseInPeriod(Tag $tag, Carbon $start, Carbon $end): array;
+
+    /**
      * @param string $tag
      *
      * @return Tag|null
      */
     public function findByTag(string $tag): ?Tag;
+
+    /**
+     * Find one or more tags based on the query.
+     * @param string $query
+     *
+     * @return Collection
+     */
+    public function searchTag(string $query): Collection;
 
     /**
      * @param int $tagId
@@ -84,6 +106,15 @@ interface TagRepositoryInterface
     public function get(): Collection;
 
     /**
+     * @param Tag    $tag
+     * @param Carbon $start
+     * @param Carbon $end
+     *
+     * @return array
+     */
+    public function incomeInPeriod(Tag $tag, Carbon $start, Carbon $end): array;
+
+    /**
      * @param Tag $tag
      *
      * @return Carbon|null
@@ -103,6 +134,15 @@ interface TagRepositoryInterface
      * @return Tag|null
      */
     public function oldestTag(): ?Tag;
+
+    /**
+     * Search the users tags.
+     *
+     * @param string $query
+     *
+     * @return Collection
+     */
+    public function searchTags(string $query): Collection;
 
     /**
      * @param User $user
@@ -146,6 +186,15 @@ interface TagRepositoryInterface
      * @return array
      */
     public function tagCloud(?int $year): array;
+
+    /**
+     * @param Tag    $tag
+     * @param Carbon $start
+     * @param Carbon $end
+     *
+     * @return array
+     */
+    public function transferredInPeriod(Tag $tag, Carbon $start, Carbon $end): array;
 
     /**
      * Update a tag.

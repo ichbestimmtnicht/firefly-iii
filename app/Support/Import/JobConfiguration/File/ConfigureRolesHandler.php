@@ -1,22 +1,22 @@
 <?php
 /**
  * ConfigureRolesHandler.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -58,7 +58,7 @@ class ConfigureRolesHandler implements FileConfigurationInterface
      * @param array $config
      *
      * @return MessageBag
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     *
      */
     public function configurationComplete(array $config): MessageBag
     {
@@ -74,7 +74,7 @@ class ConfigureRolesHandler implements FileConfigurationInterface
             if ('_ignore' !== $role) {
                 ++$assigned;
             }
-            if (\in_array($role, ['amount', 'amount_credit', 'amount_debit', 'amount_negated'])) {
+            if (in_array($role, ['amount', 'amount_credit', 'amount_debit', 'amount_negated'])) {
                 $hasAmount = true;
             }
             if ('foreign-currency-code' === $role) {
@@ -151,7 +151,7 @@ class ConfigureRolesHandler implements FileConfigurationInterface
     {
         foreach ($line as $column => $value) {
             $value = trim($value);
-            if (\strlen($value) > 0) {
+            if ('' != $value) {
                 $this->examples[$column][] = $value;
             }
         }
@@ -194,7 +194,7 @@ class ConfigureRolesHandler implements FileConfigurationInterface
         foreach ($records as $line) {
             $line               = array_values($line);
             $line               = $this->processSpecifics($config, $line);
-            $count              = \count($line);
+            $count              = count($line);
             $this->totalColumns = $count > $this->totalColumns ? $count : $this->totalColumns;
             $this->getExampleFromLine($line);
         }
@@ -219,7 +219,7 @@ class ConfigureRolesHandler implements FileConfigurationInterface
             try {
                 $stmt    = (new Statement)->limit(1)->offset(0);
                 $records = $stmt->process($reader);
-                $headers = $records->fetchOne(0);
+                $headers = $records->fetchOne();
                 // @codeCoverageIgnoreStart
             } catch (Exception $e) {
                 Log::error($e->getMessage());
@@ -372,7 +372,7 @@ class ConfigureRolesHandler implements FileConfigurationInterface
         $specifics      = $config['specifics'] ?? [];
         $names          = array_keys($specifics);
         foreach ($names as $name) {
-            if (!\in_array($name, $validSpecifics, true)) {
+            if (!in_array($name, $validSpecifics, true)) {
                 continue;
             }
             /** @var SpecificInterface $specific */

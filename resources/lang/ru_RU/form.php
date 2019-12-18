@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Лимит кредитной карты',
     'automatch'                   => 'Автоматическое сопоставление',
     'skip'                        => 'Пропустить',
+    'enabled'                     => 'Включено',
     'name'                        => 'Название',
     'active'                      => 'Активный',
     'amount_min'                  => 'Минимальная сумма',
@@ -37,38 +38,41 @@ return [
     'match'                       => 'Ключи для связи',
     'strict'                      => 'Строгий режим',
     'repeat_freq'                 => 'Повторы',
+    'update_channel'              => 'Канал обновлений',
     'journal_currency_id'         => 'Валюта',
     'currency_id'                 => 'Валюта',
     'transaction_currency_id'     => 'Валюта',
     'external_ip'                 => 'Внешний IP-адрес вашего сервера',
     'attachments'                 => 'Вложения',
     'journal_amount'              => 'Сумма',
-    'journal_source_name'         => 'Revenue account (source)',
-    'journal_source_id'           => 'Asset account (source)',
+    'journal_source_name'         => 'Доходный счет (источник)',
+    'keep_bill_id'                => 'Счёт к оплате',
+    'journal_source_id'           => 'Основной счёт (источник)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Проверка безопасности паролей',
     'source_account'              => 'Исходный счёт',
     'destination_account'         => 'Счёт назначения',
-    'journal_destination_id'      => 'Asset account (destination)',
-    'asset_destination_account'   => 'Destination account',
-    'include_net_worth'           => 'Include in net worth',
-    'asset_source_account'        => 'Source account',
+    'journal_destination_id'      => 'Основной счёт (назначение)',
+    'asset_destination_account'   => 'Счёт назначения',
+    'include_net_worth'           => 'Включать в "Мои сбережения"',
+    'asset_source_account'        => 'Исходный счёт',
     'journal_description'         => 'Описание',
     'note'                        => 'Заметки',
+    'store_new_transaction'       => 'Сохранить новую транзакцию',
     'split_journal'               => 'Разделить эту транзакцию',
     'split_journal_explanation'   => 'Разделить эту транзакцию на несколько частей',
     'currency'                    => 'Валюта',
     'account_id'                  => 'Основной счёт',
     'budget_id'                   => 'Бюджет',
-    'openingBalance'              => 'Начальный баланс',
+    'opening_balance'             => 'Начальный баланс',
     'tagMode'                     => 'Режим метки',
     'tag_position'                => 'Расположение метки',
-    'virtualBalance'              => 'Виртуальный баланс',
+    'virtual_balance'             => 'Виртуальный баланс',
     'targetamount'                => 'Целевая сумма',
-    'accountRole'                 => 'Роль учётной записи',
-    'openingBalanceDate'          => 'Дата начального баланса',
-    'ccType'                      => 'План оплаты по кредитной карте',
-    'ccMonthlyPaymentDate'        => 'Дата ежемесячного платежа по кредитной карте',
+    'account_role'                => 'Роль учётной записи',
+    'opening_balance_date'        => 'Дата начального баланса',
+    'cc_type'                     => 'План оплаты по кредитной карте',
+    'cc_monthly_payment_date'     => 'Дата ежемесячного платежа по кредитной карте',
     'piggy_bank_id'               => 'Копилка',
     'returnHere'                  => 'Вернуться сюда',
     'returnHereExplanation'       => 'После сохранения вернуться сюда и создать ещё одну аналогичную запись.',
@@ -85,9 +89,9 @@ return [
     'verification'                => 'Проверка',
     'api_key'                     => 'API-ключ',
     'remember_me'                 => 'Запомнить меня',
-    'liability_type_id'           => 'Liability type',
-    'interest'                    => 'Interest',
-    'interest_period'             => 'Interest period',
+    'liability_type_id'           => 'Вид ответственности',
+    'interest'                    => 'Процентная ставка',
+    'interest_period'             => 'Период начисления процентов',
 
     'source_account_asset'        => 'Исходный счёт (основной счёт)',
     'destination_account_expense' => 'Счёт назначения (счёт расхода)',
@@ -99,7 +103,7 @@ return [
     'convert_Transfer'            => 'Конвертировать перевод',
 
     'amount'                      => 'Сумма',
-    'foreign_amount'              => 'Сумму в иностранной валюте',
+    'foreign_amount'              => 'Сумма в иностранной валюте',
     'existing_attachments'        => 'Существующие вложения',
     'date'                        => 'Дата',
     'interest_date'               => 'Дата выплаты',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Символ',
     'code'                        => 'Код',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Номер счета',
+    'account_number'              => 'Номер счёта',
     'creditCardNumber'            => 'Номер кредитной карты',
     'has_headers'                 => 'Заголовки',
     'date_format'                 => 'Формат даты',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Остановить обработку',
     'start_date'                  => 'Начало диапазона',
     'end_date'                    => 'Конец диапазона',
-    'export_start_range'          => 'Начало диапазона для экспорта',
-    'export_end_range'            => 'Конец диапазона для экспорта',
-    'export_format'               => 'Формат файла',
     'include_attachments'         => 'Включить загруженные вложения',
     'include_old_uploads'         => 'Включить импортированные данные',
-    'accounts'                    => 'Экспорт транзакций с этих счетов',
     'delete_account'              => 'Удалить счёт ":name"',
     'delete_bill'                 => 'Удаление счёта к оплате ":name"',
     'delete_budget'               => 'Удалить бюджет ":name"',
@@ -154,7 +154,7 @@ return [
     'delete_rule_group'           => 'Удалить группу правил ":title"',
     'delete_link_type'            => 'Удалить тип ссылки ":name"',
     'delete_user'                 => 'Удалить пользователя ":email"',
-    'delete_recurring'            => 'Delete recurring transaction ":title"',
+    'delete_recurring'            => 'Удалить повторяющуюся транзакцию ":title"',
     'user_areYouSure'             => 'Если вы удалите пользователя ":email", все данные будут удалены. Это действие нельзя будет отменить. Если вы удалите себя, вы потеряете доступ к этому экземпляру Firefly III.',
     'attachment_areYouSure'       => 'Вы действительно хотите удалить вложение с именем ":name"?',
     'account_areYouSure'          => 'Вы действительно хотите удалить счёт с именем ":name"?',
@@ -163,7 +163,7 @@ return [
     'ruleGroup_areYouSure'        => 'Вы действительно хотите удалить группу правил с названием ":title"?',
     'budget_areYouSure'           => 'Вы действительно хотите удалить бюджет с именем ":name"?',
     'category_areYouSure'         => 'Вы действительно хотите удалить категорию с именем ":name"?',
-    'recurring_areYouSure'        => 'Are you sure you want to delete the recurring transaction titled ":title"?',
+    'recurring_areYouSure'        => 'Вы действительно хотите удалить повторяющуюся транзакцию с названием ":title"?',
     'currency_areYouSure'         => 'Вы уверены, что хотите удалить валюту ":name"?',
     'piggyBank_areYouSure'        => 'Вы уверены, что хотите удалить копилку с именем ":name"?',
     'journal_areYouSure'          => 'Вы действительно хотите удалить транзакцию с описанием ":description"?',
@@ -179,11 +179,11 @@ return [
     'also_delete_connections'     => 'Единственная транзакция, связанная с данным типом ссылки, потеряет это соединение. |Все :count транзакций, связанные с данным типом ссылки, потеряют свои соединения.',
     'also_delete_rules'           => 'Единственное правило, связанное с данной группой правил, будет удалено. |Все :count правила, связанные с данной группой правил, будут удалены.',
     'also_delete_piggyBanks'      => 'Единственная копилка, связанная с данным счётом, будет удалена.|Все :count копилки, связанные с данным счётом, будут удалены.',
-    'bill_keep_transactions'      => 'The only transaction connected to this bill will not be deleted.|All :count transactions connected to this bill will be spared deletion.',
-    'budget_keep_transactions'    => 'The only transaction connected to this budget will not be deleted.|All :count transactions connected to this budget will be spared deletion.',
-    'category_keep_transactions'  => 'The only transaction connected to this category will not be deleted.|All :count transactions connected to this category will be spared deletion.',
-    'recurring_keep_transactions' => 'The only transaction created by this recurring transaction will not be deleted.|All :count transactions created by this recurring transaction will be spared deletion.',
-    'tag_keep_transactions'       => 'The only transaction connected to this tag will not be deleted.|All :count transactions connected to this tag will be spared deletion.',
+    'bill_keep_transactions'      => 'Единственная транзакция, связанная с данным счётом, не будет удалена. |Все :count транзакции, связанные с данным счётом, будут сохранены.',
+    'budget_keep_transactions'    => 'Единственная транзакция, связанная с данным бюджетом, не будет удалена.|Все :count транзакции, связанные с этим бюджетом, будут сохранены.',
+    'category_keep_transactions'  => 'Единственная транзакция, связанная с данной категорией, не будет удалена.|Все :count транзакции, связанные с этой категорией, будут сохранены.',
+    'recurring_keep_transactions' => 'Единственная транзакция, связанная с повторяющейся транзакцией, не будет удалена.|Все :count транзакции, связанные с этой категорией, будут сохранены.',
+    'tag_keep_transactions'       => 'Только транзакция, связанная с этой меткой, будет удалена.|Все :count транзакций, связанные с этой меткой, будут сохранены.',
     'check_for_updates'           => 'Проверить обновления',
 
     'email'                 => 'Адрес электронной почты',
@@ -191,6 +191,7 @@ return [
     'password_confirmation' => 'Пароль (ещё раз)',
     'blocked'               => 'Заблокирован?',
     'blocked_code'          => 'Причина блокировки',
+    'login_name'            => 'Логин',
 
     // import
     'apply_rules'           => 'Применить правила',
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Открытый ключ',
     'country_code'          => 'Код страны',
     'provider_code'         => 'Банк или поставщик данных',
+    'fints_url'             => 'FinTS API URL',
+    'fints_port'            => 'Порт',
+    'fints_bank_code'       => 'Код банка',
+    'fints_username'        => 'Имя пользователя',
+    'fints_password'        => 'PIN / Пароль',
+    'fints_account'         => 'Счёт FinTS',
+    'local_account'         => 'Счёт Firefly III',
+    'from_date'             => 'От даты',
+    'to_date'               => 'До даты',
+
 
     'due_date'                => 'Срок',
     'payment_date'            => 'Дата платежа',
@@ -240,7 +251,12 @@ return [
     'repetition_end'          => 'Заканчивать повторение',
     'repetitions'             => 'Повторения',
     'calendar'                => 'Календарь',
-    'weekend'                 => 'Weekend',
-    'client_secret'           => 'Client secret',
+    'weekend'                 => 'Выходные',
+    'client_secret'           => 'Закрытый ключ клиента',
+
+    'withdrawal_destination_id' => 'Счёт назначения',
+    'deposit_source_id'         => 'Исходный счёт',
+    'expected_on'               => 'Ожидаем',
+    'paid'                      => 'Оплачено',
 
 ];

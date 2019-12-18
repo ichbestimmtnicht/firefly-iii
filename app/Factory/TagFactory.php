@@ -1,22 +1,22 @@
 <?php
 /**
  * TagFactory.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 /** @noinspection MultipleReturnStatementsInspection */
 
@@ -34,20 +34,21 @@ use Log;
  */
 class TagFactory
 {
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        if ('testing' === env('APP_ENV')) {
-            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', \get_class($this)));
-        }
-    }
-
     /** @var Collection */
     private $tags;
     /** @var User */
     private $user;
+
+    /**
+     * Constructor.
+     * @codeCoverageIgnore
+     */
+    public function __construct()
+    {
+        if ('testing' === config('app.env')) {
+            Log::warning(sprintf('%s should not be instantiated in the TEST environment!', get_class($this)));
+        }
+    }
 
     /**
      * @param array $data
@@ -56,18 +57,20 @@ class TagFactory
      */
     public function create(array $data): ?Tag
     {
-        return Tag::create(
-            [
-                'user_id'     => $this->user->id,
-                'tag'         => $data['tag'],
-                'tagMode'     => 'nothing',
-                'date'        => $data['date'],
-                'description' => $data['description'],
-                'latitude'    => $data['latitude'],
-                'longitude '  => $data['longitude'],
-                'zoomLevel'   => $data['zoom_level'],
-            ]
-        );
+        $zoomLevel = 0 === (int)$data['zoom_level'] ? null : (int)$data['zoom_level'];
+        $latitude  = 0.0 === (float)$data['latitude'] ? null : (float)$data['latitude'];
+        $longitude = 0.0 === (float)$data['longitude'] ? null : (float)$data['longitude'];
+        $array     = [
+            'user_id'     => $this->user->id,
+            'tag'         => trim($data['tag']),
+            'tagMode'     => 'nothing',
+            'date'        => $data['date'],
+            'description' => $data['description'],
+            'latitude'    => $latitude,
+            'longitude'   => $longitude,
+            'zoomLevel'   => $zoomLevel,
+        ];
+        return Tag::create($array);
     }
 
     /**
@@ -77,17 +80,13 @@ class TagFactory
      */
     public function findOrCreate(string $tag): ?Tag
     {
-        if (null === $this->tags) {
-            $this->tags = $this->user->tags()->get();
-        }
+        $tag = trim($tag);
 
-        /** @var Tag $object */
-        foreach ($this->tags as $object) {
-            if (strtolower($object->tag) === strtolower($tag)) {
-                return $object;
-            }
+        /** @var Tag $dbTag */
+        $dbTag = $this->user->tags()->where('tag', $tag)->first();
+        if (null !== $dbTag) {
+            return $dbTag;
         }
-
         $newTag = $this->create(
             [
                 'tag'         => $tag,
@@ -98,7 +97,6 @@ class TagFactory
                 'zoom_level'  => null,
             ]
         );
-        $this->tags->push($newTag);
 
         return $newTag;
     }

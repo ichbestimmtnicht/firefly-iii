@@ -1,37 +1,39 @@
 <?php
 /**
  * ConfigurationController.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
 
 namespace FireflyIII\Api\V1\Controllers;
 
+use FireflyIII\Api\V1\Requests\ConfigurationRequest;
 use FireflyIII\Exceptions\FireflyException;
 use FireflyIII\Models\Configuration;
 use FireflyIII\Repositories\User\UserRepositoryInterface;
 use FireflyIII\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * Class ConfigurationController.
+ *
+ * @codeCoverageIgnore
  */
 class ConfigurationController extends Controller
 {
@@ -41,7 +43,8 @@ class ConfigurationController extends Controller
     private $repository;
 
     /**
-     * BudgetController constructor.
+     * ConfigurationController constructor.
+     *
      */
     public function __construct()
     {
@@ -54,8 +57,7 @@ class ConfigurationController extends Controller
                 $admin = auth()->user();
 
                 if (!$this->repository->hasRole($admin, 'owner')) {
-                    /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-                    throw new FireflyException('No access to method.'); // @codeCoverageIgnore
+                    throw new FireflyException('200005: You need the "owner" role to do this.'); // @codeCoverageIgnore
                 }
 
                 return $next($request);
@@ -72,47 +74,30 @@ class ConfigurationController extends Controller
     {
         $configData = $this->getConfigData();
 
-        return response()->json(['data' => $configData], 200)->header('Content-Type', 'application/vnd.api+json');
+        return response()->json(['data' => $configData])->header('Content-Type', 'application/vnd.api+json');
     }
 
     /**
      * Update the configuration.
      *
-     * @param Request $request
+     * @param ConfigurationRequest $request
+     * @param string               $name
      *
      * @return JsonResponse
-     * @throws FireflyException
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    public function update(Request $request): JsonResponse
+    public function update(ConfigurationRequest $request, string $name): JsonResponse
     {
-        $name  = $request->get('name');
-        $value = $request->get('value');
-        $valid = ['is_demo_site', 'permission_update_check', 'single_user_mode'];
-        if (!\in_array($name, $valid, true)) {
-            throw new FireflyException('You cannot edit this configuration value.');
-        }
-        $configValue = '';
-        switch ($name) {
-            case 'is_demo_site':
-            case 'single_user_mode':
-                $configValue = 'true' === $value;
-                break;
-            case 'permission_update_check':
-                $configValue = (int)$value >= -1 && (int)$value <= 1 ? (int)$value : -1;
-                break;
-        }
-        app('fireflyconfig')->set($name, $configValue);
+        $data = $request->getAll();
+        app('fireflyconfig')->set($name, $data['value']);
         $configData = $this->getConfigData();
 
-        return response()->json(['data' => $configData], 200)->header('Content-Type', 'application/vnd.api+json');
+        return response()->json(['data' => $configData])->header('Content-Type', 'application/vnd.api+json');
     }
 
     /**
      * Get all config values.
      *
      * @return array
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private function getConfigData(): array
     {

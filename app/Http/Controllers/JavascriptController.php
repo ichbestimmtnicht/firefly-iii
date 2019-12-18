@@ -1,22 +1,22 @@
 <?php
 /**
  * JavascriptController.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -48,7 +48,9 @@ class JavascriptController extends Controller
      */
     public function accounts(AccountRepositoryInterface $repository, CurrencyRepositoryInterface $currencyRepository): Response
     {
-        $accounts   = $repository->getAccountsByType([AccountType::DEFAULT, AccountType::ASSET, AccountType::DEBT,AccountType::LOAN,AccountType::MORTGAGE, AccountType::CREDITCARD]);
+        $accounts   = $repository->getAccountsByType(
+            [AccountType::DEFAULT, AccountType::ASSET, AccountType::DEBT, AccountType::LOAN, AccountType::MORTGAGE, AccountType::CREDITCARD]
+        );
         $preference = app('preferences')->get('currencyPreference', config('firefly.default_currency', 'EUR'));
         /** @noinspection NullPointerExceptionInspection */
         $default = $currencyRepository->findByCodeNull($preference->data);
@@ -66,7 +68,7 @@ class JavascriptController extends Controller
         }
 
         return response()
-            ->view('javascript.accounts', $data, 200)
+            ->view('javascript.accounts', $data)
             ->header('Content-Type', 'text/javascript');
     }
 
@@ -89,7 +91,7 @@ class JavascriptController extends Controller
         }
 
         return response()
-            ->view('javascript.currencies', $data, 200)
+            ->view('javascript.currencies', $data)
             ->header('Content-Type', 'text/javascript');
     }
 
@@ -107,6 +109,7 @@ class JavascriptController extends Controller
         $account    = $repository->findNull((int)$request->get('account'));
         $currencyId = 0;
         if (null !== $account) {
+            // TODO we can use getAccountCurrency() instead
             $currencyId = (int)$repository->getMetaValue($account, 'currency_id');
         }
         /** @var TransactionCurrency $currency */
@@ -124,6 +127,7 @@ class JavascriptController extends Controller
         /** @noinspection NullPointerExceptionInspection */
         $lang      = $pref->data;
         $dateRange = $this->getDateRangeConfig();
+        $uid       = substr(hash('sha256', auth()->user()->id . auth()->user()->email), 0, 12);
 
         $data = [
             'currencyCode'    => $currency->code,
@@ -133,11 +137,12 @@ class JavascriptController extends Controller
             'language'        => $lang,
             'dateRangeTitle'  => $dateRange['title'],
             'dateRangeConfig' => $dateRange['configuration'],
+            'uid'             => $uid,
         ];
         $request->session()->keep(['two-factor-secret']);
 
         return response()
-            ->view('javascript.variables', $data, 200)
+            ->view('javascript.variables', $data)
             ->header('Content-Type', 'text/javascript');
     }
 

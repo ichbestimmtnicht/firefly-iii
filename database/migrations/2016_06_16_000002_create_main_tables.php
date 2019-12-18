@@ -1,22 +1,22 @@
 <?php
 /**
  * 2016_06_16_000002_create_main_tables.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -31,7 +31,7 @@ class CreateMainTables extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down()
+    public function down(): void
     {
         Schema::drop('account_meta');
         Schema::drop('piggy_bank_repetitions');
@@ -68,7 +68,7 @@ class CreateMainTables extends Migration
      *
      * @SuppressWarnings(PHPMD.ShortMethodName)
      */
-    public function up()
+    public function up(): void
     {
         $this->createAccountTables();
         $this->createPiggyBanksTable();
@@ -87,7 +87,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createAccountTables()
+    private function createAccountTables(): void
     {
         if (!Schema::hasTable('accounts')) {
             Schema::create(
@@ -127,7 +127,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createAttachmentsTable()
+    private function createAttachmentsTable(): void
     {
         if (!Schema::hasTable('attachments')) {
             Schema::create(
@@ -158,7 +158,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createBillsTable()
+    private function createBillsTable(): void
     {
         if (!Schema::hasTable('bills')) {
             Schema::create(
@@ -190,7 +190,7 @@ class CreateMainTables extends Migration
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength) // cannot be helped.
      */
-    private function createBudgetTables()
+    private function createBudgetTables(): void
     {
         if (!Schema::hasTable('budgets')) {
             Schema::create(
@@ -241,7 +241,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createCategoriesTable()
+    private function createCategoriesTable(): void
     {
         if (!Schema::hasTable('categories')) {
             Schema::create(
@@ -264,7 +264,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createExportJobsTable()
+    private function createExportJobsTable(): void
     {
         if (!Schema::hasTable('export_jobs')) {
             Schema::create(
@@ -300,7 +300,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createPiggyBanksTable()
+    private function createPiggyBanksTable(): void
     {
         if (!Schema::hasTable('piggy_banks')) {
             Schema::create(
@@ -341,7 +341,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createPreferencesTable()
+    private function createPreferencesTable(): void
     {
         if (!Schema::hasTable('preferences')) {
             Schema::create(
@@ -362,7 +362,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createRoleTable()
+    private function createRoleTable(): void
     {
         if (!Schema::hasTable('role_user')) {
             Schema::create(
@@ -384,7 +384,7 @@ class CreateMainTables extends Migration
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength) // cannot be helped.
      * @SuppressWarnings(PHPMD.CyclomaticComplexity) // its exactly five
      */
-    private function createRuleTables()
+    private function createRuleTables(): void
     {
         if (!Schema::hasTable('rule_groups')) {
             Schema::create(
@@ -472,7 +472,7 @@ class CreateMainTables extends Migration
     /**
      *
      */
-    private function createTagsTable()
+    private function createTagsTable(): void
     {
         if (!Schema::hasTable('tags')) {
             Schema::create(
@@ -503,7 +503,7 @@ class CreateMainTables extends Migration
      * @SuppressWarnings(PHPMD.NPathComplexity) // cannot be helped
      * @SuppressWarnings(PHPMD.CyclomaticComplexity) // its exactly five
      */
-    private function createTransactionTables()
+    private function createTransactionTables(): void
     {
         if (!Schema::hasTable('transaction_journals')) {
             Schema::create(

@@ -1,43 +1,57 @@
 <?php
 /**
  * PiggyBankEventTransformerTest.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
 
 namespace Tests\Unit\Transformers;
 
-use FireflyIII\Models\Account;
-use FireflyIII\Models\AccountMeta;
-use FireflyIII\Models\PiggyBank;
+use Amount;
 use FireflyIII\Models\PiggyBankEvent;
 use FireflyIII\Models\TransactionCurrency;
+use FireflyIII\Repositories\Account\AccountRepositoryInterface;
 use FireflyIII\Repositories\Currency\CurrencyRepositoryInterface;
+use FireflyIII\Repositories\PiggyBank\PiggyBankRepositoryInterface;
 use FireflyIII\Transformers\PiggyBankEventTransformer;
+use Log;
+use Mockery;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Tests\TestCase;
 
 /**
  * Class PiggyBankEventTransformerTest
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class PiggyBankEventTransformerTest extends TestCase
 {
+    /**
+     *
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        Log::info(sprintf('Now in %s.', get_class($this)));
+    }
+
     /**
      * Basic test with no meta data.
      *
@@ -45,100 +59,63 @@ class PiggyBankEventTransformerTest extends TestCase
      */
     public function testBasic(): void
     {
-        // make new account:
-        $account = Account::create(
-            [
-                'user_id'         => $this->user()->id,
-                'account_type_id' => 3, // asset account
-                'name'            => 'Random name #' . random_int(1, 10000),
-                'virtual_balance' => 12.34,
-                'iban'            => 'NL85ABNA0466812694',
-                'active'          => 1,
-                'encrypted'       => 0,
-            ]
-        );
-        $piggy   = PiggyBank::create(
-            [
-                'account_id'   => $account->id,
-                'name'         => 'Some random piggy #' . random_int(1, 10000),
-                'targetamount' => '1000',
-                'startdate'    => '2018-01-01',
-                'targetdate'   => '2018-01-31',
-                'order'        => 1,
-                'active'       => 1,
-            ]
-        );
-        $event   = PiggyBankEvent::create(
-            [
-                'piggy_bank_id' => $piggy->id,
-                'date'          => '2018-01-01',
-                'amount'        => '123.45',
-            ]
-        );
+        // repositories
+        $currencyRepos = $this->mock(CurrencyRepositoryInterface::class);
+        $piggyRepos    = $this->mock(PiggyBankRepositoryInterface::class);
+        $accountRepos  = $this->mock(AccountRepositoryInterface::class);
 
-        $transformer = new PiggyBankEventTransformer(new ParameterBag);
-        $result      = $transformer->transform($event);
+        $currencyRepos->shouldReceive('setUser')->atLeast()->once();
+        $piggyRepos->shouldReceive('setUser')->atLeast()->once();
+        $accountRepos->shouldReceive('setUser')->atLeast()->once();
+
+        // mock calls:
+        $accountRepos->shouldReceive('getMetaValue')->withArgs([Mockery::any(), 'currency_id'])->atLeast()->once()->andReturn(1);
+        $currencyRepos->shouldReceive('findNull')->withArgs([1])->atLeast()->once()->andReturn($this->getEuro());
+
+        $event       = $this->getRandomPiggyBankEvent();
+
+
+
+        $transformer = app(PiggyBankEventTransformer::class);
+        $transformer->setParameters(new ParameterBag);
+
+        $result = $transformer->transform($event);
         $this->assertEquals($event->id, $result['id']);
-        $this->assertEquals(123.45, $result['amount']);
+        $this->assertEquals($event->amount, $result['amount']);
+        $this->assertEquals($event->transaction_journal_id, $result['transaction_journal_id']);
+
     }
 
     /**
-     * Basic test with currency meta data.
+     * Basic test with no currency info.
      *
      * @covers \FireflyIII\Transformers\PiggyBankEventTransformer
      */
-    public function testBasicCurrency(): void
+    public function testNoCurrency(): void
     {
-        // mock repository.
-        $repository = $this->mock(CurrencyRepositoryInterface::class);
-        $repository->shouldReceive('setUser')->once();
-        $repository->shouldReceive('findNull')->withArgs([1])->andReturn(TransactionCurrency::find(1))->once();
+        // repositories
+        $currencyRepos = $this->mock(CurrencyRepositoryInterface::class);
+        $piggyRepos    = $this->mock(PiggyBankRepositoryInterface::class);
+        $accountRepos  = $this->mock(AccountRepositoryInterface::class);
 
-        // make new account:
-        $account = Account::create(
-            [
-                'user_id'         => $this->user()->id,
-                'account_type_id' => 3, // asset account
-                'name'            => 'Random name #' . random_int(1, 10000),
-                'virtual_balance' => 12.34,
-                'iban'            => 'NL85ABNA0466812694',
-                'active'          => 1,
-                'encrypted'       => 0,
-            ]
-        );
+        $currencyRepos->shouldReceive('setUser')->atLeast()->once();
+        $piggyRepos->shouldReceive('setUser')->atLeast()->once();
+        $accountRepos->shouldReceive('setUser')->atLeast()->once();
 
-        // meta
-        $accountMeta = AccountMeta::create(
-            [
-                'account_id' => $account->id,
-                'name'       => 'currency_id',
-                'data'       => 1,
-            ]
-        );
+        // mock calls:
+        $accountRepos->shouldReceive('getMetaValue')->withArgs([Mockery::any(), 'currency_id'])->atLeast()->once()->andReturn(1);
+        $currencyRepos->shouldReceive('findNull')->withArgs([1])->atLeast()->once()->andReturn(null);
 
-        $piggy = PiggyBank::create(
-            [
-                'account_id'   => $account->id,
-                'name'         => 'Some random piggy #' . random_int(1, 10000),
-                'targetamount' => '1000',
-                'startdate'    => '2018-01-01',
-                'targetdate'   => '2018-01-31',
-                'order'        => 1,
-                'active'       => 1,
-            ]
-        );
-        $event = PiggyBankEvent::create(
-            [
-                'piggy_bank_id' => $piggy->id,
-                'date'          => '2018-01-01',
-                'amount'        => '123.45',
-            ]
-        );
+        Amount::shouldReceive('getDefaultCurrencyByUser')->andReturn($this->getEuro())->atLeast()->once();
 
-        $transformer = new PiggyBankEventTransformer(new ParameterBag);
-        $result      = $transformer->transform($event);
+        $event       = $this->getRandomPiggyBankEvent();
+        $transformer = app(PiggyBankEventTransformer::class);
+        $transformer->setParameters(new ParameterBag);
+
+        $result = $transformer->transform($event);
         $this->assertEquals($event->id, $result['id']);
-        $this->assertEquals(123.45, $result['amount']);
-    }
+        $this->assertEquals($event->amount, $result['amount']);
+        $this->assertEquals($event->transaction_journal_id, $result['transaction_journal_id']);
 
+    }
 }

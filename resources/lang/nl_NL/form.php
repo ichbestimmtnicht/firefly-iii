@@ -2,22 +2,22 @@
 
 /**
  * form.php
- * Copyright (c) 2018 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ return [
     'credit_card_limit'           => 'Credit card limiet',
     'automatch'                   => 'Automatisch herkennen',
     'skip'                        => 'Overslaan',
+    'enabled'                     => 'Ingeschakeld',
     'name'                        => 'Naam',
     'active'                      => 'Actief',
     'amount_min'                  => 'Minimumbedrag',
@@ -37,6 +38,7 @@ return [
     'match'                       => 'Reageert op',
     'strict'                      => 'Strikte modus',
     'repeat_freq'                 => 'Herhaling',
+    'update_channel'              => 'Updatekanaal',
     'journal_currency_id'         => 'Valuta',
     'currency_id'                 => 'Valuta',
     'transaction_currency_id'     => 'Valuta',
@@ -44,6 +46,7 @@ return [
     'attachments'                 => 'Bijlagen',
     'journal_amount'              => 'Bedrag',
     'journal_source_name'         => 'Debiteur (bron)',
+    'keep_bill_id'                => 'Contract',
     'journal_source_id'           => 'Betaalrekening (bron)',
     'BIC'                         => 'BIC',
     'verify_password'             => 'Bevestig wachtwoordsterkte',
@@ -55,20 +58,21 @@ return [
     'asset_source_account'        => 'Bronrekening',
     'journal_description'         => 'Omschrijving',
     'note'                        => 'Notities',
+    'store_new_transaction'       => 'Nieuwe transactie opslaan',
     'split_journal'               => 'Splits deze transactie',
     'split_journal_explanation'   => 'Splits deze transactie in meerdere stukken',
     'currency'                    => 'Valuta',
     'account_id'                  => 'Betaalrekening',
     'budget_id'                   => 'Budget',
-    'openingBalance'              => 'Startsaldo',
+    'opening_balance'             => 'Startsaldo',
     'tagMode'                     => 'Tag modus',
     'tag_position'                => 'Taglocatie',
-    'virtualBalance'              => 'Virtuele saldo',
+    'virtual_balance'             => 'Virtueel saldo',
     'targetamount'                => 'Doelbedrag',
-    'accountRole'                 => 'Rol van rekening',
-    'openingBalanceDate'          => 'Startsaldodatum',
-    'ccType'                      => 'Betaalplan',
-    'ccMonthlyPaymentDate'        => 'Betaaldatum',
+    'account_role'                => 'Rol van rekening',
+    'opening_balance_date'        => 'Startsaldodatum',
+    'cc_type'                     => 'Betaalplan',
+    'cc_monthly_payment_date'     => 'Betaaldatum',
     'piggy_bank_id'               => 'Spaarpotje',
     'returnHere'                  => 'Keer terug',
     'returnHereExplanation'       => 'Terug naar deze pagina na het opslaan.',
@@ -116,7 +120,7 @@ return [
     'symbol'                      => 'Symbool',
     'code'                        => 'Code',
     'iban'                        => 'IBAN',
-    'accountNumber'               => 'Rekeningnummer',
+    'account_number'              => 'Rekeningnummer',
     'creditCardNumber'            => 'Creditcardnummer',
     'has_headers'                 => 'Kolomnamen op de eerste rij?',
     'date_format'                 => 'Datumformaat',
@@ -137,12 +141,8 @@ return [
     'stop_processing'             => 'Stop met verwerken',
     'start_date'                  => 'Start van bereik',
     'end_date'                    => 'Einde van bereik',
-    'export_start_range'          => 'Start van exportbereik',
-    'export_end_range'            => 'Einde van exportbereik',
-    'export_format'               => 'Bestandsformaat',
     'include_attachments'         => 'Sla ook geüploade bijlagen op',
     'include_old_uploads'         => 'Sla ook geïmporteerde bestanden op',
-    'accounts'                    => 'Exporteer boekingen van deze rekeningen',
     'delete_account'              => 'Verwijder rekening ":name"',
     'delete_bill'                 => 'Verwijder contract ":name"',
     'delete_budget'               => 'Verwijder budget ":name"',
@@ -191,6 +191,7 @@ return [
     'password_confirmation' => 'Wachtwoord (nogmaals)',
     'blocked'               => 'Is geblokkeerd?',
     'blocked_code'          => 'Reden voor blokkade',
+    'login_name'            => 'Login',
 
     // import
     'apply_rules'           => 'Regels toepassen',
@@ -222,6 +223,16 @@ return [
     'public_key'            => 'Publieke sleutel',
     'country_code'          => 'Landcode',
     'provider_code'         => 'Bank of gegevensprovider',
+    'fints_url'             => 'FinTS API URL',
+    'fints_port'            => 'Poort',
+    'fints_bank_code'       => 'Bankcode',
+    'fints_username'        => 'Gebruikersnaam',
+    'fints_password'        => 'Pincode / wachtwoord',
+    'fints_account'         => 'FinTS-rekening',
+    'local_account'         => 'Firefly III rekening',
+    'from_date'             => 'Datum van',
+    'to_date'               => 'Datum tot',
+
 
     'due_date'                => 'Vervaldatum',
     'payment_date'            => 'Betalingsdatum',
@@ -242,5 +253,10 @@ return [
     'calendar'                => 'Kalender',
     'weekend'                 => 'Weekend',
     'client_secret'           => 'Client secret',
+
+    'withdrawal_destination_id' => 'Doelrekening',
+    'deposit_source_id'         => 'Bronrekening',
+    'expected_on'               => 'Verwacht op',
+    'paid'                      => 'Betaald',
 
 ];

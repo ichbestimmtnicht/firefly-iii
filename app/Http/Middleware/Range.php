@@ -1,22 +1,22 @@
 <?php
 /**
  * Range.php
- * Copyright (c) 2017 thegrumpydictator@gmail.com
+ * Copyright (c) 2019 thegrumpydictator@gmail.com
  *
- * This file is part of Firefly III.
+ * This file is part of Firefly III (https://github.com/firefly-iii).
  *
- * Firefly III is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Firefly III is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Firefly III. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 declare(strict_types=1);
 
@@ -53,8 +53,6 @@ class Range
             // set more view variables:
             $this->configureList();
 
-            // flash a big fat warning when users use SQLite in Docker
-            $this->loseItAll($request);
         }
 
         return $next($request);
@@ -95,31 +93,17 @@ class Range
         $dateTimeFormat    = (string)trans('config.date_time');
         $defaultCurrency   = app('amount')->getDefaultCurrency();
 
+        // also format for moment JS:
+        $madMomentJS = (string)trans('config.month_and_day_moment_js');
+
+        app('view')->share('madMomentJS', $madMomentJS);
         app('view')->share('monthAndDayFormat', $monthAndDayFormat);
         app('view')->share('dateTimeFormat', $dateTimeFormat);
         app('view')->share('defaultCurrency', $defaultCurrency);
     }
 
     /**
-     * Error when sqlite in docker.
-     *
-     * @param Request $request
-     */
-    private function loseItAll(Request $request): void
-    {
-        if ('sqlite' === getenv('DB_CONNECTION') && true === getenv('IS_DOCKER')) {
-            // @codeCoverageIgnoreStart
-            $request->session()->flash(
-                'error', 'You seem to be using SQLite in a Docker container. Don\'t do this. If the container restarts all your data will be gone.'
-            );
-            // @codeCoverageIgnoreEnd
-        }
-    }
-
-    /**
      * Set the range for the current view.
-     *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private function setRange(): void
     {
